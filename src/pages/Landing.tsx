@@ -6,32 +6,32 @@ import Y2KHero from '../components/Y2KHero';
 
 const features = [
   {
-    icon: <Brain size={20} />,
+    icon: <Brain size={28} strokeWidth={1.5} />,
     title: 'Multi-Agent Architecture',
     desc: 'Six specialized AI agents collaborate in sequence — ingestion, classification, compliance, risk assessment, negotiation, and summary.',
   },
   {
-    icon: <Scale size={20} />,
+    icon: <Scale size={28} strokeWidth={1.5} />,
     title: 'Indian Legal Compliance',
     desc: 'Purpose-built for Indian MSMEs. Checks GST clause validity, arbitration terms, jurisdiction clauses, and MSME Act protections.',
   },
   {
-    icon: <FileText size={20} />,
+    icon: <FileText size={28} strokeWidth={1.5} />,
     title: 'Surgical Redlining',
     desc: 'The Negotiator Agent does not rewrite your contract. It makes precise, word-level edits to neutralize risk while preserving intent.',
   },
   {
-    icon: <Zap size={20} />,
+    icon: <Zap size={28} strokeWidth={1.5} />,
     title: 'Hindi & English',
     desc: 'Fully bilingual interface. Upload contracts in Devanagari or English, get explanations in the language you prefer.',
   },
   {
-    icon: <GitBranch size={20} />,
+    icon: <GitBranch size={28} strokeWidth={1.5} />,
     title: 'Explainable AI',
     desc: 'Every risk flag links back to the exact clause in the original document. You see the reasoning, not just the verdict.',
   },
   {
-    icon: <ShieldCheck size={20} />,
+    icon: <ShieldCheck size={28} strokeWidth={1.5} />,
     title: 'Scanned Document OCR',
     desc: 'Handles low-quality scans, skewed pages, and printed contracts. Human-in-the-loop correction for critical extractions.',
   },

@@ -30,7 +30,7 @@ const Upload = () => {
   return (
     <div className="upload-page">
       <div className="upload-header">
-        <h1>New Analysis</h1>
+        <h1>Start Your Analysis</h1>
         <p>Upload a contract to let the Sentinel agents detect hidden risks.</p>
       </div>
 
