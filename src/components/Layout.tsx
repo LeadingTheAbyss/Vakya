@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { ShieldCheck, LayoutGrid, FileText, FileQuestion, Settings, Bell, Search, ChevronDown, UploadCloud } from 'lucide-react';
+import { ShieldCheck, LayoutGrid, FileQuestion, Settings, Bell, Search, ChevronDown, UploadCloud } from 'lucide-react';
 import './Layout.css';
 
 const Layout = () => {

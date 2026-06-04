@@ -158,7 +158,7 @@ const Analysis = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [loadingStep, setLoadingStep] = useState(0);
+  const [, setLoadingStep] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'trace' | 'risks' | 'rewrite'>('trace');
   const [selectedClause, setSelectedClause] = useState<Clause | null>(null);
@@ -217,7 +217,7 @@ const Analysis = () => {
             </div>
           </div>
           <div className="loading-steps">
-            {agents.map((step, index) => (
+            {agents.map((step, _index) => (
               <div key={step.id} className={`loading-step loading-step--${step.status}`}>
                 <div className="loading-step-icon">
                   {step.status === 'done' ? (

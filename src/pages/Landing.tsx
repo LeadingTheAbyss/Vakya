@@ -1,16 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, FileText, Scale, Brain, Zap, GitBranch, ChevronRight } from 'lucide-react';
+import { ShieldCheck, ArrowRight, FileText, Scale, Brain, Zap, GitBranch } from 'lucide-react';
 import './Landing.css';
 import HowItWorks from '../components/HowItWorks';
-
-const agents = [
-  { id: 1, name: 'Ingestion', label: 'Parses PDF & OCR', color: '#6366f1' },
-  { id: 2, name: 'Classification', label: 'Segments clauses', color: '#8b5cf6' },
-  { id: 3, name: 'Compliance', label: 'Checks GST & law', color: '#ec4899' },
-  { id: 4, name: 'Risk Engine', label: 'Scores each clause', color: '#ef4444' },
-  { id: 5, name: 'Negotiator', label: 'Rewrites for MSME', color: '#10b981' },
-  { id: 6, name: 'Summary', label: 'Final risk report', color: '#f59e0b' },
-];
 
 const features = [
   {

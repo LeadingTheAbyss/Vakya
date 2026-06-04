@@ -8,7 +8,7 @@ import Upload from './pages/Upload';
 
 function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/app" element={<Layout />}>

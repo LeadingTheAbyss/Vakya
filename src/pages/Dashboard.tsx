@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import {
   UploadCloud, AlertTriangle, CheckCircle2, Clock, MoreHorizontal,
-  TrendingUp, FileWarning, ShieldCheck, FilePlus, ChevronRight,
+  TrendingUp, FileWarning, ShieldCheck, FilePlus,
   ArrowUpRight
 } from 'lucide-react';
 import './Dashboard.css';
