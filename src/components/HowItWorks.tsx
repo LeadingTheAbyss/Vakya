@@ -59,7 +59,7 @@ const HowItWorks: React.FC = () => {
 
     // Animate the dots lighting up as they come into view
     gsap.utils.toArray('.connector-dot').forEach((dot) => {
-      gsap.fromTo(dot as Element, 
+      gsap.fromTo(dot as Element,
         { backgroundColor: '#cbd5e1', boxShadow: 'none' },
         {
           backgroundColor: '#10b981', // Success Emerald Green
@@ -105,14 +105,14 @@ const HowItWorks: React.FC = () => {
             return (
               <React.Fragment key={step.id}>
                 {/* Connector Dot (exactly halfway between cards) */}
-                <div 
-                  className="clay-element connector-dot" 
+                <div
+                  className="clay-element connector-dot"
                   style={{ left: `${left - 400}px`, top: '500px' }}
                 ></div>
 
                 {/* Main Card */}
-                <div 
-                  className="clay-element hiw-card" 
+                <div
+                  className="clay-element hiw-card"
                   style={{ left: `${left}px`, top: '500px' }}
                 >
                   <div className="card-video-wrap" onClick={() => setSelectedImage(step.image)} style={{ cursor: 'pointer' }}>

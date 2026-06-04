@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import heroImage from '../images/bg.png';
@@ -165,7 +165,7 @@ const Y2KHero = () => {
 
       {/* ── BELOW SECTION — hover wired via React ── */}
       <div className="section-below">
-        <div className="bg-plasma" style={{ opacity: 0.12 }}></div>
+        <div className="bg-plasma" style={{opacity:0.12}}></div>
         <div
           className="below-text"
           id="belowText"
@@ -178,7 +178,7 @@ const Y2KHero = () => {
             <div className="bt-underline"></div>
             <div className="bt-chars-wrap">
               {LINE1.split("").map((ch, i) => (
-                <span key={'l1' + i} className={"bt-char" + (ch === " " ? " bt-space" : "")}>
+                <span key={'l1'+i} className={"bt-char" + (ch === " " ? " bt-space" : "")}>
                   {ch === " " ? "\u00a0" : ch}
                 </span>
               ))}
@@ -191,7 +191,7 @@ const Y2KHero = () => {
             <div className="bt-chars-wrap">
               <em>
                 {LINE2.split("").map((ch, i) => (
-                  <span key={'l2' + i} className={"bt-char" + (ch === " " ? " bt-space" : "")}>
+                  <span key={'l2'+i} className={"bt-char" + (ch === " " ? " bt-space" : "")}>
                     {ch === " " ? "\u00a0" : ch}
                   </span>
                 ))}
