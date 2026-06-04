@@ -18,8 +18,7 @@ const Layout = () => {
       <aside className="sidebar">
         <div className="sidebar-top">
           <button className="sidebar-brand" onClick={() => navigate('/')}>
-            <ShieldCheck size={18} className="brand-icon" />
-            <span className="brand-name">Contract Sentinel</span>
+            <span className="brand-name">Vakya</span>
           </button>
 
           <nav className="sidebar-nav">

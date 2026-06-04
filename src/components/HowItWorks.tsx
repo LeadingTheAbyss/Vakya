@@ -90,7 +90,6 @@ const HowItWorks: React.FC = () => {
 
   return (
     <div className="hiw-section" id="how">
-      <div className="scroll-instruction">↓ Scroll down to trace the flow ↓</div>
 
       <div className="scroll-wrapper" ref={wrapperRef}>
         <div className="canvas" ref={canvasRef} style={{ width: '5600px' }}>

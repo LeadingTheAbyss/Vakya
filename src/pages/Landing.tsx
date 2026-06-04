@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, FileText, Scale, Brain, Zap, GitBranch } from 'lucide-react';
 import './Landing.css';
 import HowItWorks from '../components/HowItWorks';
+import Y2KHero from '../components/Y2KHero';
 
 const features = [
   {
@@ -52,7 +53,7 @@ const Landing = () => {
       <nav className="landing-nav">
         <div className="nav-logo">
           <ShieldCheck size={22} className="nav-logo-icon" />
-          <span>Contract Sentinel</span>
+          <span>Vakya</span>
         </div>
         <div className="nav-links">
           <a href="#features">Features</a>
@@ -67,40 +68,11 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
-      <section className="hero">
-        <div className="hero-glow hero-glow-1" />
-        <div className="hero-glow hero-glow-2" />
+      {/* ── Y2K Hero Section ── */}
+      <Y2KHero />
 
-        <div className="hero-badge">
-          <span className="hero-badge-dot" />
-          Built for Indian MSMEs · Hindi & English
-        </div>
-
-        <h1 className="hero-headline">
-          Your contract has
-          <br />
-          <span className="hero-headline-accent">hidden traps.</span>
-          <br />
-          We find them.
-        </h1>
-
-        <p className="hero-sub">
-          Contract Sentinel reads your vendor agreements, freelance contracts, and lease agreements clause by clause — flags risks, rewrites dangerous terms, and gives you a plain-language report before you sign anything.
-        </p>
-
-        <div className="hero-cta">
-          <button className="btn btn-primary" style={{ padding: '10px 22px', fontSize: '14px' }} onClick={() => navigate('/app')}>
-            Analyze a contract free <ArrowRight size={16} />
-          </button>
-          <button className="btn btn-ghost" style={{ padding: '10px 22px', fontSize: '14px' }}>
-            Watch demo
-          </button>
-        </div>
-
-        {/* ── Agent Flow Diagram ── */}
-        <HowItWorks />
-      </section>
+      {/* ── How It Works ── */}
+      <HowItWorks />
 
       {/* ── Stats ── */}
       <section className="stats-section">
@@ -117,7 +89,7 @@ const Landing = () => {
         <div className="section-header">
           <div className="section-tag">Capabilities</div>
           <h2>Everything a legal team would catch,<br />in under a minute.</h2>
-          <p>No legal vocabulary needed. Upload your document and Contract Sentinel handles the rest.</p>
+          <p>No legal vocabulary needed. Upload your document and Vakya handles the rest.</p>
         </div>
         <div className="features-grid">
           {features.map(f => (
@@ -148,10 +120,10 @@ const Landing = () => {
       <footer className="landing-footer">
         <div className="footer-logo">
           <ShieldCheck size={16} />
-          <span>Contract Sentinel</span>
+          <span>Vakya</span>
         </div>
         <p className="text-tertiary text-sm">
-          © 2026 Contract Sentinel. Not a substitute for legal advice.
+          © 2026 Vakya. Not a substitute for legal advice.
         </p>
       </footer>
     </div>
