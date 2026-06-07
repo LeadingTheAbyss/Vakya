@@ -1,3 +1,4 @@
+// Force Git to track pages folder
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldAlert, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle2 } from 'lucide-react';
