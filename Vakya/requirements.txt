@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+langgraph
+langchain-community
+langchain-core
+langchain-ollama
+chromadb
+sentence-transformers
+PyMuPDF
+spacy
+streamlit
+paddleocr
+paddlepaddle
+python-docx
+langdetect
