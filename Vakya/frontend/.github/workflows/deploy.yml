@@ -1,2 +1,0 @@
-# OBSOLETE: This workflow was moved to the root of the repository (.github/workflows/deploy.yml)
-# GitHub Actions only run from the repository root. You can safely delete this file.
