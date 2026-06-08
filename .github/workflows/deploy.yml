@@ -21,20 +21,20 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: './Vakya/frontend/package-lock.json'
+          cache-dependency-path: './frontend/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./Vakya/frontend
+        working-directory: ./frontend
         run: npm ci
 
       - name: Build
-        working-directory: ./Vakya/frontend
+        working-directory: ./frontend
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './Vakya/frontend/dist'
+          path: './frontend/dist'
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
