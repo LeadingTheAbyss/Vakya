@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Globe, Moon, Sun, Sliders, Database, Info,
-  Download, Trash2, ChevronRight, Check, ExternalLink
+  Download, Trash2, Check, ExternalLink
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { fetchConfig } from '../api/client';
@@ -19,7 +19,7 @@ const Settings = () => {
   useEffect(() => {
     fetchConfig()
       .then(data => setLlmModel(data.ollama_model))
-      .catch(err => setLlmModel('Unknown'));
+      .catch(() => setLlmModel('Unknown'));
   }, []);
 
   const showSaved = () => {

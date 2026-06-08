@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  User, Mail, Phone, Shield, Bell, Trash2, Camera,
-  ChevronRight, BarChart3, FileText, AlertTriangle, Check, X, Loader2
+  User, Phone, Shield, Bell, Trash2, Camera,
+  BarChart3, FileText, AlertTriangle, Check, X, Loader2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { fetchProfile } from '../api/client';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, updateUser, logout, t } = useApp();
+  const { user, updateUser, logout, t, language } = useApp();
   const navigate = useNavigate();
 
   const [name, setName] = useState(user?.name || '');

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  UploadCloud, AlertTriangle, CheckCircle2, Clock, FileWarning,
+  UploadCloud, AlertTriangle, Clock, FileWarning,
   TrendingUp, ShieldCheck, FilePlus, ArrowUpRight, Loader2, Database
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';

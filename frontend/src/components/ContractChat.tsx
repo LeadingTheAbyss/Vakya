@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Loader2, ChevronDown } from 'lucide-react';
+import { Send, Loader2, ChevronDown } from 'lucide-react';
 import { chatWithContract } from '../api/client';
 import { useApp } from '../context/AppContext';
 import logoImg from '../images/logo.png';
@@ -23,7 +23,7 @@ const SUGGESTIONS = [
 ];
 
 const ContractChat = ({ clauses, filename }: ContractChatProps) => {
-  const { t, language } = useApp();
+  const { language } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');

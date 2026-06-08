@@ -214,7 +214,6 @@ const translations: Record<Language, Record<string, string>> = {
     'common.export': 'Export',
     'common.clear': 'Clear',
     'common.active': 'Active',
-    'common.save': 'Save Preferences',
   },
   hi: {
     // Nav
@@ -399,7 +398,6 @@ const translations: Record<Language, Record<string, string>> = {
     'common.export': 'निर्यात करें',
     'common.clear': 'साफ़ करें',
     'common.active': 'सक्रिय',
-    'common.save': 'प्राथमिकताएं सहेजें',
   },
 };
 const AppContext = createContext<AppContextType | null>(null);

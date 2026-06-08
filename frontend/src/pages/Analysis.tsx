@@ -461,7 +461,7 @@ const Analysis = () => {
         <div className="workspace-header-actions">
           <button
             className="btn btn-ghost btn-sm"
-            onClick={() => setLanguage(l => l === 'en' ? 'hi' : 'en')}
+            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
           >
             <Languages size={14} />
             {language === 'en' ? 'हिंदी' : 'English'}
