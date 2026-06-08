@@ -3,14 +3,14 @@ from langchain_ollama import ChatOllama
 import os
 from utils.llm_helper import invoke_structured
 
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-r1:14b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
 class NegotiationInfo(BaseModel):
     improved_wording: str = Field(description="Suggested improved legal wording to replace the clause. State 'No change needed' if acceptable.")
     counter_terms: list[str] = Field(description="List of negotiation points or counter-terms to present to the other party.")
 
 def suggest_negotiation(clause_text: str, risk_level: str, unfair_terms: list[str]) -> dict:
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2)
+    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2, num_ctx=2048)
     try:
         unfair_str = ", ".join(unfair_terms) if unfair_terms else "None"
         messages = [

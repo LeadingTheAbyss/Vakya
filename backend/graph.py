@@ -22,7 +22,7 @@ class ContractState(TypedDict):
     current_index: int
     analyzed_clauses: Annotated[List[ClauseAnalysis], operator.add]
 
-BATCH_SIZE = 3
+BATCH_SIZE = 1
 
 def process_single_clause(args):
     idx, clause = args

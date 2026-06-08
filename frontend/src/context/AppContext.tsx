@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { upsertUser, fetchProfile, updateProfile } from '../api/client';
 export type Language = 'en' | 'hi';
 export type Theme = 'dark' | 'light';
 interface User {
@@ -7,6 +8,10 @@ interface User {
   email: string;
   photo?: string;
   plan: 'free' | 'pro';
+  phone?: string;
+  email_alerts?: boolean;
+  weekly_digest?: boolean;
+  risk_alerts?: boolean;
 }
 interface AppContextType {
   // Auth
@@ -68,6 +73,89 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.contractsAnalyzed': 'Contracts Analyzed',
     'profile.clausesFlagged': 'Clauses Flagged',
     'profile.reportsGenerated': 'Reports Generated',
+    // Dashboard
+    'dashboard.title': 'Contract Repository',
+    'dashboard.loading': 'Loading…',
+    'dashboard.contracts': 'contracts',
+    'dashboard.contract': 'contract',
+    'dashboard.pendingReview': 'pending review',
+    'dashboard.criticalRisks': 'critical risks',
+    'dashboard.criticalRisk': 'critical risk',
+    'dashboard.riskReport': 'Risk Report',
+    'dashboard.uploadContract': 'Upload Contract',
+    'dashboard.criticalRisksCard': 'Critical Risks',
+    'dashboard.moderateRiskCard': 'Moderate Risk',
+    'dashboard.clearedCard': 'Cleared',
+    'dashboard.totalAnalysedCard': 'Total Analysed',
+    'dashboard.loadingContracts': 'Loading your contracts…',
+    'dashboard.noContracts': 'No contracts analysed yet. Upload one to get started.',
+    'dashboard.tableDoc': 'Document',
+    'dashboard.tableRiskScore': 'Risk Score',
+    'dashboard.tableRiskLevel': 'Risk Level',
+    'dashboard.tableStatus': 'Status',
+    'dashboard.tableAnalysed': 'Analysed',
+    'dashboard.view': 'View →',
+    'dashboard.dropText': 'Drop a contract here or ',
+    'dashboard.browseFiles': 'browse files',
+    'dashboard.fileTypes': 'PDF, DOCX, or scanned image · Max 50MB',
+    // Layout
+    'layout.searchPlaceholder': 'Search contracts, clauses, counterparties...',
+    // Analysis
+    'analysis.processing': 'Processing Contract',
+    'analysis.estimatedTime': 'Estimated Time to Analyze:',
+    'analysis.repository': 'Repository',
+    'analysis.generateReport': 'Generate Report',
+    'analysis.document': 'Document',
+    'analysis.page': 'Page',
+    'analysis.of': 'of',
+    'analysis.agentTrace': 'Agent Trace',
+    'analysis.risksRedlines': 'Risk & Redlines',
+    'analysis.msmeDraft': 'MSME Draft',
+    'analysis.agentsCompleted': 'agents completed',
+    'analysis.criticalIssues': 'critical issues',
+    'analysis.originalText': 'Original Text',
+    'analysis.msmeRewrite': 'MSME Rewrite',
+    'analysis.issue': 'Issue',
+    'analysis.suggestion': 'Suggestion',
+    'analysis.accept': 'Accept',
+    'analysis.reject': 'Reject',
+    'analysis.cached': 'Cached',
+    'analysis.risk': 'Risk',
+    'analysis.missing': 'Missing',
+    'analysis.missingClause': 'Missing: Jurisdiction & Governing Law clause',
+    'analysis.critical': 'Critical',
+    'analysis.moderate': 'Moderate',
+    'analysis.safe': 'Safe',
+    'analysis.allClauses': 'All clauses',
+    'analysis.whatIsRisk': 'What is the risk?',
+    'analysis.recommendedAction': 'Recommended Action',
+    'analysis.saferWording': 'Safer Wording',
+    'analysis.remix': 'Remix',
+    'analysis.flagForLawyer': 'Flag for Lawyer',
+    'analysis.acceptRewrite': 'Accept Rewrite',
+    'analysis.negotiatedDraft': 'Negotiated MSME Draft',
+    'analysis.draftDesc': 'This AI-generated draft resolves {rewrites} critical issues and highlights {highRisk} high-risk clauses to protect your MSME rights.',
+    'analysis.downloadPdf': 'Download Revised PDF',
+    'analysis.summaryOfChanges': 'Summary of Changes Made',
+    'analysis.noRewrites': 'No rewrites were generated for this document.',
+    'analysis.redlinesReview': 'Redlines Review',
+    'analysis.noIssues': 'No issues detected — all clauses appear safe.',
+    'analysis.viewAnalysis': 'View analysis',
+    // Report
+    'report.back': 'Back to Analysis',
+    'report.exporting': 'Exporting...',
+    'report.exportDocx': 'Export DOCX',
+    'report.analyzedMeta': 'Analyzed Jun 3, 2026 · Counterparty: TechCorp Solutions Pvt. Ltd.',
+    'report.riskScore': 'Risk Score:',
+    'report.execSummary': 'Executive Summary',
+    'report.execSummaryText1': 'This contract poses a High Risk (72/100) to your business. Two clauses create direct financial exposure: the payment terms allow the Client to withhold payments indefinitely, and the termination notice of 7 days is insufficient to protect your pipeline. The contract also lacks two legally critical protections — a jurisdiction clause and a GST compliance clause — both essential for Indian MSME contexts.',
+    'report.execSummaryText2': 'We recommend negotiating clauses 1 and 2 before signing, and inserting the AI-generated jurisdiction and GST clauses as conditions for agreement.',
+    'report.criticalRisks': 'Critical Risks',
+    'report.moderateRisks': 'Moderate Risks',
+    'report.missingClauses': 'Missing Clauses',
+    'report.clauseDist': 'Clause Distribution',
+    'report.requiredActions': 'Required Actions Before Signing',
+    'report.footer': 'Generated by Vakya on Jun 3, 2026. This report provides legal information, not legal advice. Consult a qualified legal professional for binding decisions.',
     // Settings
     'settings.title': 'Settings',
     'settings.language': 'Language',
@@ -126,6 +214,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.export': 'Export',
     'common.clear': 'Clear',
     'common.active': 'Active',
+    'common.save': 'Save Preferences',
   },
   hi: {
     // Nav
@@ -169,6 +258,89 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.contractsAnalyzed': 'विश्लेषित अनुबंध',
     'profile.clausesFlagged': 'चिह्नित खंड',
     'profile.reportsGenerated': 'उत्पन्न रिपोर्ट',
+    // Dashboard
+    'dashboard.title': 'अनुबंध रिपोजिटरी',
+    'dashboard.loading': 'लोड हो रहा है…',
+    'dashboard.contracts': 'अनुबंध',
+    'dashboard.contract': 'अनुबंध',
+    'dashboard.pendingReview': 'समीक्षा लंबित',
+    'dashboard.criticalRisks': 'गंभीर जोखिम',
+    'dashboard.criticalRisk': 'गंभीर जोखिम',
+    'dashboard.riskReport': 'जोखिम रिपोर्ट',
+    'dashboard.uploadContract': 'अनुबंध अपलोड करें',
+    'dashboard.criticalRisksCard': 'गंभीर जोखिम',
+    'dashboard.moderateRiskCard': 'मध्यम जोखिम',
+    'dashboard.clearedCard': 'सुरक्षित',
+    'dashboard.totalAnalysedCard': 'कुल विश्लेषित',
+    'dashboard.loadingContracts': 'आपके अनुबंध लोड हो रहे हैं…',
+    'dashboard.noContracts': 'अभी तक कोई अनुबंध विश्लेषित नहीं हुआ। शुरू करने के लिए एक अपलोड करें।',
+    'dashboard.tableDoc': 'दस्तावेज़',
+    'dashboard.tableRiskScore': 'जोखिम स्कोर',
+    'dashboard.tableRiskLevel': 'जोखिम स्तर',
+    'dashboard.tableStatus': 'स्थिति',
+    'dashboard.tableAnalysed': 'विश्लेषित',
+    'dashboard.view': 'देखें →',
+    'dashboard.dropText': 'अनुबंध यहाँ छोड़ें या ',
+    'dashboard.browseFiles': 'फ़ाइलें ब्राउज़ करें',
+    'dashboard.fileTypes': 'PDF, DOCX, या स्कैन की गई छवि · अधिकतम 50MB',
+    // Layout
+    'layout.searchPlaceholder': 'अनुबंध, खंड, प्रतिपक्ष खोजें...',
+    // Analysis
+    'analysis.processing': 'अनुबंध संसाधित हो रहा है',
+    'analysis.estimatedTime': 'विश्लेषण का अनुमानित समय:',
+    'analysis.repository': 'रिपोजिटरी',
+    'analysis.generateReport': 'रिपोर्ट बनाएँ',
+    'analysis.document': 'दस्तावेज़',
+    'analysis.page': 'पृष्ठ',
+    'analysis.of': 'में से',
+    'analysis.agentTrace': 'एजेंट ट्रेस',
+    'analysis.risksRedlines': 'जोखिम और रेडलाइन',
+    'analysis.msmeDraft': 'MSME ड्राफ्ट',
+    'analysis.agentsCompleted': 'एजेंट पूरे हुए',
+    'analysis.criticalIssues': 'गंभीर समस्याएं',
+    'analysis.originalText': 'मूल पाठ',
+    'analysis.msmeRewrite': 'MSME पुनर्लेखन',
+    'analysis.issue': 'समस्या',
+    'analysis.suggestion': 'सुझाव',
+    'analysis.accept': 'स्वीकार करें',
+    'analysis.reject': 'अस्वीकार करें',
+    'analysis.cached': 'कैश्ड',
+    'analysis.risk': 'जोखिम',
+    'analysis.missing': 'गायब',
+    'analysis.missingClause': 'गायब: अधिकार क्षेत्र और शासी कानून खंड',
+    'analysis.critical': 'गंभीर',
+    'analysis.moderate': 'मध्यम',
+    'analysis.safe': 'सुरक्षित',
+    'analysis.allClauses': 'सभी खंड',
+    'analysis.whatIsRisk': 'जोखिम क्या है?',
+    'analysis.recommendedAction': 'अनुशंसित कार्रवाई',
+    'analysis.saferWording': 'सुरक्षित शब्दावली',
+    'analysis.remix': 'रीमिक्स',
+    'analysis.flagForLawyer': 'वकील के लिए चिह्नित करें',
+    'analysis.acceptRewrite': 'पुनर्लेखन स्वीकार करें',
+    'analysis.negotiatedDraft': 'समझौता वार्ता MSME ड्राफ्ट',
+    'analysis.draftDesc': 'यह AI-जनित ड्राफ्ट आपके MSME अधिकारों की रक्षा के लिए {rewrites} गंभीर समस्याओं को हल करता है और {highRisk} उच्च जोखिम वाले खंडों को उजागर करता है।',
+    'analysis.downloadPdf': 'संशोधित PDF डाउनलोड करें',
+    'analysis.summaryOfChanges': 'किए गए बदलावों का सारांश',
+    'analysis.noRewrites': 'इस दस्तावेज़ के लिए कोई पुनर्लेखन उत्पन्न नहीं किया गया।',
+    'analysis.redlinesReview': 'रेडलाइन समीक्षा',
+    'analysis.noIssues': 'कोई समस्या नहीं मिली — सभी खंड सुरक्षित प्रतीत होते हैं।',
+    'analysis.viewAnalysis': 'विश्लेषण देखें',
+    // Report
+    'report.back': 'विश्लेषण पर वापस जाएँ',
+    'report.exporting': 'निर्यात किया जा रहा है...',
+    'report.exportDocx': 'DOCX निर्यात करें',
+    'report.analyzedMeta': 'विश्लेषित 3 जून, 2026 · प्रतिपक्ष: टेककॉर्प सॉल्यूशंस प्राइवेट लिमिटेड',
+    'report.riskScore': 'जोखिम स्कोर:',
+    'report.execSummary': 'कार्यकारी सारांश',
+    'report.execSummaryText1': 'यह अनुबंध आपके व्यवसाय के लिए उच्च जोखिम (72/100) पैदा करता है। दो खंड सीधे वित्तीय जोखिम पैदा करते हैं: भुगतान की शर्तें क्लाइंट को अनिश्चित काल तक भुगतान रोकने की अनुमति देती हैं, और 7 दिनों की समाप्ति सूचना आपकी पाइपलाइन की सुरक्षा के लिए अपर्याप्त है। अनुबंध में दो कानूनी रूप से महत्वपूर्ण सुरक्षा का भी अभाव है - एक क्षेत्राधिकार खंड और एक जीएसटी अनुपालन खंड - दोनों भारतीय MSME संदर्भों के लिए आवश्यक हैं।',
+    'report.execSummaryText2': 'हम हस्ताक्षर करने से पहले खंड 1 और 2 पर बातचीत करने, और समझौते की शर्तों के रूप में AI-जनित क्षेत्राधिकार और GST खंड सम्मिलित करने की सलाह देते हैं।',
+    'report.criticalRisks': 'गंभीर जोखिम',
+    'report.moderateRisks': 'मध्यम जोखिम',
+    'report.missingClauses': 'गायब खंड',
+    'report.clauseDist': 'खंड वितरण',
+    'report.requiredActions': 'हस्ताक्षर करने से पहले आवश्यक कार्य',
+    'report.footer': 'वाक्य द्वारा 3 जून, 2026 को निर्मित। यह रिपोर्ट कानूनी जानकारी प्रदान करती है, कानूनी सलाह नहीं। बाध्यकारी निर्णयों के लिए योग्य कानूनी पेशेवर से परामर्श करें।',
     // Settings
     'settings.title': 'सेटिंग्स',
     'settings.language': 'भाषा',
@@ -227,6 +399,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.export': 'निर्यात करें',
     'common.clear': 'साफ़ करें',
     'common.active': 'सक्रिय',
+    'common.save': 'प्राथमिकताएं सहेजें',
   },
 };
 const AppContext = createContext<AppContextType | null>(null);
@@ -253,9 +426,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     document.documentElement.setAttribute('lang', language);
     localStorage.setItem('vakya_lang', language);
   }, [language]);
+  // Sync fresh DB profile whenever a stored user is found on mount
+  useEffect(() => {
+    if (!user) return;
+    fetchProfile(user.id)
+      .then(({ user: dbUser }) => {
+        const merged: User = {
+          ...user,
+          name: dbUser.name || user.name,
+          phone: dbUser.phone || '',
+          email_alerts: dbUser.email_alerts ?? true,
+          weekly_digest: dbUser.weekly_digest ?? false,
+          risk_alerts: dbUser.risk_alerts ?? true,
+          plan: (dbUser.plan as 'free' | 'pro') || user.plan,
+          photo: dbUser.photo || user.photo,
+        };
+        setUser(merged);
+        localStorage.setItem('vakya_user', JSON.stringify(merged));
+      })
+      .catch(() => { 
+        // User not in DB (e.g. DB reset), upsert them
+        upsertUser({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          photo: user.photo,
+          plan: user.plan,
+        }).catch(console.error);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const login = (newUser: User) => {
     setUser(newUser);
     localStorage.setItem('vakya_user', JSON.stringify(newUser));
+    // Persist to DB asynchronously
+    upsertUser({
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      photo: newUser.photo,
+      plan: newUser.plan,
+    })
+      .then(({ user: dbUser }) => {
+        const merged: User = {
+          ...newUser,
+          phone: dbUser.phone || '',
+          email_alerts: dbUser.email_alerts ?? true,
+          weekly_digest: dbUser.weekly_digest ?? false,
+          risk_alerts: dbUser.risk_alerts ?? true,
+        };
+        setUser(merged);
+        localStorage.setItem('vakya_user', JSON.stringify(merged));
+      })
+      .catch(console.error);
   };
   const logout = () => {
     setUser(null);
@@ -266,6 +490,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updated = { ...user, ...updates };
     setUser(updated);
     localStorage.setItem('vakya_user', JSON.stringify(updated));
+    // Persist non-auth fields to DB
+    updateProfile(user.id, {
+      name: updates.name,
+      phone: updates.phone,
+      email_alerts: updates.email_alerts,
+      weekly_digest: updates.weekly_digest,
+      risk_alerts: updates.risk_alerts,
+    }).catch(console.error);
   };
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

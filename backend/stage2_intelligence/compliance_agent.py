@@ -3,7 +3,7 @@ from langchain_ollama import ChatOllama
 import os
 from utils.llm_helper import invoke_structured
 
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-r1:14b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
 class ComplianceInfo(BaseModel):
     status: str = Field(description="Compliance status: Pass, Fail, or Flagged")
@@ -11,7 +11,7 @@ class ComplianceInfo(BaseModel):
     compliance_issues: str = Field(description="Explanation of Indian legal & tax compliance issues, if any")
 
 def check_compliance(clause_text: str, category: str) -> dict:
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.1)
+    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.1, num_ctx=2048)
     try:
         messages = [
             ("system", "You are an expert in Indian Legal & Tax compliance. Evaluate the clause for compliance with Indian law (e.g. GST, Companies Act) and identify any missing mandatory elements."),

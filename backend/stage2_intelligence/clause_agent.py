@@ -3,7 +3,7 @@ from langchain_ollama import ChatOllama
 import os
 from utils.llm_helper import invoke_structured
 
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-r1:14b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
 class ClauseInfo(BaseModel):
     category: str = Field(description="The category of the clause, e.g., Payment Terms, Liability, GST, Arbitration, Confidentiality, Termination, etc.")
@@ -11,7 +11,7 @@ class ClauseInfo(BaseModel):
     key_obligations: list[str] = Field(description="List of key obligations mentioned in the clause.")
 
 def analyze_clause(clause_text: str) -> dict:
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.1)
+    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.1, num_ctx=2048)
     try:
         messages = [
             ("system", "You are an expert legal assistant. Classify the clause into categories like Payment Terms, Liability, GST, Arbitration, Confidentiality, or Termination, and extract the required fields."),

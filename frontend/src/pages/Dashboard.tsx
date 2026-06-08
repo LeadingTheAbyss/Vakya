@@ -1,80 +1,64 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  UploadCloud, AlertTriangle, CheckCircle2, Clock, MoreHorizontal,
-  TrendingUp, FileWarning, ShieldCheck, FilePlus,
-  ArrowUpRight
+  UploadCloud, AlertTriangle, CheckCircle2, Clock, FileWarning,
+  TrendingUp, ShieldCheck, FilePlus, ArrowUpRight, Loader2, Database
 } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { fetchContracts } from '../api/client';
 import './Dashboard.css';
 
-const contracts = [
-  {
-    id: '1', name: 'Vendor_Agreement_TechCorp.pdf',
-    counterparty: 'TechCorp Solutions Pvt. Ltd.',
-    type: 'Vendor Agreement',
-    riskScore: 72, riskLevel: 'critical',
-    gstStatus: 'missing', jurisdiction: 'Mumbai, MH',
-    missingClauses: 4,
-    date: 'Jun 03, 2026', status: 'review',
-  },
-  {
-    id: '2', name: 'Freelance_Dev_Contract_Hindi.pdf',
-    counterparty: 'Sharma & Associates',
-    type: 'Freelance Contract',
-    riskScore: 45, riskLevel: 'warning',
-    gstStatus: 'present', jurisdiction: 'Delhi, DL',
-    missingClauses: 2,
-    date: 'May 28, 2026', status: 'negotiating',
-  },
-  {
-    id: '3', name: 'Office_Lease_Agreement.pdf',
-    counterparty: 'Oberoi Properties',
-    type: 'Lease Agreement',
-    riskScore: 18, riskLevel: 'safe',
-    gstStatus: 'present', jurisdiction: 'Pune, MH',
-    missingClauses: 0,
-    date: 'May 15, 2026', status: 'signed',
-  },
-  {
-    id: '4', name: 'Software_SaaS_License.pdf',
-    counterparty: 'GlobalSoft Inc.',
-    type: 'SaaS License',
-    riskScore: 58, riskLevel: 'warning',
-    gstStatus: 'unclear', jurisdiction: 'Bangalore, KA',
-    missingClauses: 3,
-    date: 'May 10, 2026', status: 'review',
-  },
-  {
-    id: '5', name: 'Distribution_Agreement_Rajasthan.pdf',
-    counterparty: 'Jaipur Distributors Co.',
-    type: 'Distribution Agreement',
-    riskScore: 82, riskLevel: 'critical',
-    gstStatus: 'missing', jurisdiction: 'Jaipur, RJ',
-    missingClauses: 6,
-    date: 'Apr 30, 2026', status: 'escalated',
-  },
-];
+// ── Types ────────────────────────────────────────────────────────────────────────
+interface DBContract {
+  id: string;
+  user_id: string;
+  filename: string;
+  analyzed_at: string;
+  risk_score: number | null;
+  risk_level: string | null;
+  status: string;
+}
 
 const riskColors: Record<string, string> = {
   critical: 'var(--risk-critical)',
-  warning: 'var(--risk-warning)',
-  safe: 'var(--risk-safe)',
+  warning:  'var(--risk-warning)',
+  safe:     'var(--risk-safe)',
 };
 
-const gstBadge: Record<string, { label: string; cls: string }> = {
-  present: { label: 'Present', cls: 'badge-safe' },
-  missing:  { label: 'Missing', cls: 'badge-critical' },
-  unclear:  { label: 'Unclear', cls: 'badge-warning' },
+const riskLevelMap = (level: string | null): string => {
+  const l = (level || '').toLowerCase();
+  if (l === 'high' || l === 'critical') return 'critical';
+  if (l === 'medium' || l === 'warning') return 'warning';
+  if (l === 'low' || l === 'safe') return 'safe';
+  return 'warning';
 };
 
 const statusBadge: Record<string, { label: string; cls: string }> = {
-  review:      { label: 'In Review', cls: 'badge-warning' },
+  review:      { label: 'In Review',   cls: 'badge-warning' },
   negotiating: { label: 'Negotiating', cls: 'badge-ai' },
-  signed:      { label: 'Signed', cls: 'badge-safe' },
-  escalated:   { label: 'Escalated', cls: 'badge-critical' },
+  signed:      { label: 'Signed',      cls: 'badge-safe' },
+  escalated:   { label: 'Escalated',   cls: 'badge-critical' },
 };
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+// ── Component ────────────────────────────────────────────────────────────────────
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user, t, language } = useApp();
+
+  const [contracts, setContracts] = useState<DBContract[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!user?.id) { setLoading(false); return; }
+    fetchContracts(user.id)
+      .then(({ contracts: rows }) => setContracts(rows))
+      .catch(() => setError('Could not load contracts. Is the backend running?'))
+      .finally(() => setLoading(false));
+  }, [user?.id]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -82,22 +66,31 @@ const Dashboard = () => {
     }
   };
 
+  // ── Computed stats ────────────────────────────────────────────────────────────
+  const criticalCount  = contracts.filter(c => riskLevelMap(c.risk_level) === 'critical').length;
+  const warningCount   = contracts.filter(c => riskLevelMap(c.risk_level) === 'warning').length;
+  const safeCount      = contracts.filter(c => riskLevelMap(c.risk_level) === 'safe').length;
+  const pendingReview  = contracts.filter(c => c.status === 'review').length;
+
   return (
     <div className="dashboard">
       {/* ── Header ── */}
       <div className="dashboard-header">
         <div>
-          <h2 className="dashboard-title">Contract Repository</h2>
+          <h2 className="dashboard-title">{t('dashboard.title')}</h2>
           <p className="text-sm text-secondary" style={{ marginTop: 4 }}>
-            5 contracts · 2 pending review · 2 critical risks
+            {loading
+              ? t('dashboard.loading')
+              : `${contracts.length} ${contracts.length !== 1 ? t('dashboard.contracts') : t('dashboard.contract')} · ${pendingReview} ${t('dashboard.pendingReview')} · ${criticalCount} ${criticalCount !== 1 ? t('dashboard.criticalRisks') : t('dashboard.criticalRisk')}`
+            }
           </p>
         </div>
         <div className="dashboard-header-actions">
           <button className="btn btn-ghost btn-sm">
-            <TrendingUp size={14} /> Risk Report
+            <TrendingUp size={14} /> {t('dashboard.riskReport')}
           </button>
           <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer' }}>
-            <UploadCloud size={14} /> Upload Contract
+            <UploadCloud size={14} /> {t('dashboard.uploadContract')}
             <input
               type="file"
               hidden
@@ -115,8 +108,8 @@ const Dashboard = () => {
             <FileWarning size={16} />
           </div>
           <div>
-            <div className="stat-card-value">2</div>
-            <div className="stat-card-label">Critical Risks</div>
+            <div className="stat-card-value">{loading ? '–' : criticalCount}</div>
+            <div className="stat-card-label">{t('dashboard.criticalRisksCard')}</div>
           </div>
           <ArrowUpRight size={14} className="stat-card-trend" />
         </div>
@@ -125,8 +118,8 @@ const Dashboard = () => {
             <AlertTriangle size={16} />
           </div>
           <div>
-            <div className="stat-card-value">2</div>
-            <div className="stat-card-label">Moderate Risk</div>
+            <div className="stat-card-value">{loading ? '–' : warningCount}</div>
+            <div className="stat-card-label">{t('dashboard.moderateRiskCard')}</div>
           </div>
         </div>
         <div className="stat-card">
@@ -134,8 +127,8 @@ const Dashboard = () => {
             <ShieldCheck size={16} />
           </div>
           <div>
-            <div className="stat-card-value">1</div>
-            <div className="stat-card-label">Cleared</div>
+            <div className="stat-card-value">{loading ? '–' : safeCount}</div>
+            <div className="stat-card-label">{t('dashboard.clearedCard')}</div>
           </div>
         </div>
         <div className="stat-card">
@@ -143,117 +136,119 @@ const Dashboard = () => {
             <FilePlus size={16} />
           </div>
           <div>
-            <div className="stat-card-value">15</div>
-            <div className="stat-card-label">Missing Clauses</div>
+            <div className="stat-card-value">{loading ? '–' : contracts.length}</div>
+            <div className="stat-card-label">{t('dashboard.totalAnalysedCard')}</div>
           </div>
         </div>
       </div>
 
       {/* ── Table ── */}
-      <div className="contracts-table-wrapper">
-        <table className="contracts-table">
-          <thead>
-            <tr>
-              <th>Document</th>
-              <th>Counterparty</th>
-              <th>Risk Score</th>
-              <th>GST Clause</th>
-              <th>Jurisdiction</th>
-              <th>Missing</th>
-              <th>Status</th>
-              <th>Uploaded</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {contracts.map(c => (
-              <tr
-                key={c.id}
-                className="contracts-table-row"
-                onClick={() => navigate(`/app/analysis/${c.id}`)}
-              >
-                <td>
-                  <div className="doc-cell">
-                    <div className="doc-icon">
-                      <FileWarning size={14} />
-                    </div>
-                    <div>
-                      <div className="doc-name">{c.name}</div>
-                      <div className="doc-type text-xs text-tertiary">{c.type}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className="text-secondary" style={{ fontSize: 13 }}>{c.counterparty}</span>
-                </td>
-                <td>
-                  <div className="risk-score-cell">
-                    <div
-                      className="risk-score-bar-track"
-                    >
-                      <div
-                        className="risk-score-bar-fill"
-                        style={{
-                          width: `${c.riskScore}%`,
-                          background: riskColors[c.riskLevel],
-                        }}
-                      />
-                    </div>
-                    <span className="risk-score-num" style={{ color: riskColors[c.riskLevel] }}>
-                      {c.riskScore}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <span className={`badge ${gstBadge[c.gstStatus].cls}`}>
-                    {gstBadge[c.gstStatus].label}
-                  </span>
-                </td>
-                <td>
-                  <span className="text-secondary" style={{ fontSize: 13 }}>{c.jurisdiction}</span>
-                </td>
-                <td>
-                  {c.missingClauses > 0 ? (
-                    <span className="badge badge-missing">{c.missingClauses} missing</span>
-                  ) : (
-                    <span className="flex items-center gap-1 text-safe text-sm">
-                      <CheckCircle2 size={12} /> None
-                    </span>
-                  )}
-                </td>
-                <td>
-                  <span className={`badge ${statusBadge[c.status].cls}`}>
-                    {statusBadge[c.status].label}
-                  </span>
-                </td>
-                <td>
-                  <span className="flex items-center gap-1 text-tertiary text-sm">
-                    <Clock size={12} /> {c.date}
-                  </span>
-                </td>
-                <td onClick={e => e.stopPropagation()}>
-                  <button className="btn-icon">
-                    <MoreHorizontal size={15} />
-                  </button>
-                </td>
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '64px', gap: '12px', color: 'var(--text-secondary)' }}>
+          <Loader2 size={20} className="animate-spin" />
+          <span>{t('dashboard.loadingContracts')}</span>
+        </div>
+      ) : error ? (
+        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--risk-critical)' }}>
+          {error}
+        </div>
+      ) : contracts.length === 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px', gap: '16px', color: 'var(--text-secondary)' }}>
+          <Database size={32} style={{ opacity: 0.4 }} />
+          <p style={{ fontSize: 15 }}>{t('dashboard.noContracts')}</p>
+        </div>
+      ) : (
+        <div className="contracts-table-wrapper">
+          <table className="contracts-table">
+            <thead>
+              <tr>
+                <th>{t('dashboard.tableDoc')}</th>
+                <th>{t('dashboard.tableRiskScore')}</th>
+                <th>{t('dashboard.tableRiskLevel')}</th>
+                <th>{t('dashboard.tableStatus')}</th>
+                <th>{t('dashboard.tableAnalysed')}</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {contracts.map(c => {
+                const level = riskLevelMap(c.risk_level);
+                const score = c.risk_score ?? 0;
+                const badge = statusBadge[c.status] ?? { label: c.status, cls: 'badge-warning' };
+                return (
+                  <tr
+                    key={c.id}
+                    className="contracts-table-row"
+                    onClick={() => navigate(`/app/analysis/${c.id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td>
+                      <div className="doc-cell">
+                        <div className="doc-icon">
+                          <FileWarning size={14} />
+                        </div>
+                        <div>
+                          <div className="doc-name">{c.filename}</div>
+                          <div className="doc-type text-xs text-tertiary">
+                            {c.analyzed_at ? formatDate(c.analyzed_at) : '—'}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="risk-score-cell">
+                        <div className="risk-score-bar-track">
+                          <div
+                            className="risk-score-bar-fill"
+                            style={{ width: `${score}%`, background: riskColors[level] }}
+                          />
+                        </div>
+                        <span className="risk-score-num" style={{ color: riskColors[level] }}>
+                          {score}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`badge badge-${level}`}>
+                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${badge.cls}`}>{badge.label}</span>
+                    </td>
+                    <td>
+                      <span className="flex items-center gap-1 text-tertiary text-sm">
+                        <Clock size={12} /> {c.analyzed_at ? formatDate(c.analyzed_at) : '—'}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={e => { e.stopPropagation(); navigate(`/app/analysis/${c.id}`); }}
+                      >
+                        {t('dashboard.view')}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* ── Upload Drop Zone ── */}
       <label className="upload-drop-zone">
         <input type="file" hidden accept=".pdf,.doc,.docx,image/*" onChange={handleFileChange} />
         <UploadCloud size={20} className="upload-zone-icon" />
         <div className="upload-zone-text">
-          <span className="text-secondary">Drop a contract here or </span>
-          <span className="text-ai">browse files</span>
+          <span className="text-secondary">{t('dashboard.dropText')}</span>
+          <span className="text-ai">{t('dashboard.browseFiles')}</span>
         </div>
-        <span className="text-tertiary text-sm">PDF, DOCX, or scanned image · Max 50MB</span>
+        <span className="text-tertiary text-sm">{t('dashboard.fileTypes')}</span>
         <div className="upload-zone-langs">
-          <span className="lang-pill">English</span>
-          <span className="lang-pill">हिंदी</span>
+          <span className={`lang-pill ${language === 'en' ? 'active' : ''}`}>English</span>
+          <span className={`lang-pill ${language === 'hi' ? 'active' : ''}`}>हिंदी</span>
         </div>
       </label>
     </div>

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Mail, Phone, Shield, Bell, Trash2, Camera,
-  ChevronRight, BarChart3, FileText, AlertTriangle, Check, X
+  ChevronRight, BarChart3, FileText, AlertTriangle, Check, X, Loader2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { fetchProfile } from '../api/client';
 import './Profile.css';
 
 const Profile = () => {
@@ -12,15 +13,38 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const [name, setName] = useState(user?.name || '');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [emailAlerts, setEmailAlerts] = useState(user?.email_alerts ?? true);
+  const [weeklyDigest, setWeeklyDigest] = useState(user?.weekly_digest ?? false);
+  const [riskAlerts, setRiskAlerts] = useState(user?.risk_alerts ?? true);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(false);
-  const [riskAlerts, setRiskAlerts] = useState(true);
   const [saved, setSaved] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [stats, setStats] = useState({ contracts_analyzed: 0, clauses_flagged: 0, reports_generated: 0 });
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Load fresh profile + real stats from DB on mount
+  useEffect(() => {
+    if (!user) return;
+    setLoadingProfile(true);
+    fetchProfile(user.id)
+      .then(({ user: dbUser, stats: dbStats }) => {
+        setName(dbUser.name || user.name || '');
+        setPhone(dbUser.phone || '');
+        setEmailAlerts(dbUser.email_alerts ?? true);
+        setWeeklyDigest(dbUser.weekly_digest ?? false);
+        setRiskAlerts(dbUser.risk_alerts ?? true);
+        setStats({
+          contracts_analyzed: Number(dbStats?.contracts_analyzed ?? 0),
+          clauses_flagged: Number(dbStats?.clauses_flagged ?? 0),
+          reports_generated: Number(dbStats?.contracts_analyzed ?? 0), // same count as analyses
+        });
+      })
+      .catch(() => { /* use context defaults if unreachable */ })
+      .finally(() => setLoadingProfile(false));
+  }, [user?.id]);
 
   const getInitials = (n: string) =>
     n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -31,7 +55,7 @@ const Profile = () => {
   };
 
   const handleSaveProfile = () => {
-    updateUser({ name });
+    updateUser({ name, phone, email_alerts: emailAlerts, weekly_digest: weeklyDigest, risk_alerts: riskAlerts });
     showSaved('profile');
   };
 
@@ -47,10 +71,10 @@ const Profile = () => {
     navigate('/login');
   };
 
-  const stats = [
-    { label: t('profile.contractsAnalyzed'), value: '12', icon: <FileText size={18} /> },
-    { label: t('profile.clausesFlagged'), value: '47', icon: <AlertTriangle size={18} /> },
-    { label: t('profile.reportsGenerated'), value: '8', icon: <BarChart3 size={18} /> },
+  const statCards = [
+    { label: t('profile.contractsAnalyzed'), value: String(stats.contracts_analyzed), icon: <FileText size={18} /> },
+    { label: t('profile.clausesFlagged'), value: String(stats.clauses_flagged), icon: <AlertTriangle size={18} /> },
+    { label: t('profile.reportsGenerated'), value: String(stats.reports_generated), icon: <BarChart3 size={18} /> },
   ];
 
   if (!user) { navigate('/login'); return null; }
@@ -72,18 +96,17 @@ const Profile = () => {
         <div className="profile-header-info">
           <h1 className="profile-name">{user.name}</h1>
           <p className="profile-email-sub">{user.email}</p>
-          <span className={`profile-plan-badge ${user.plan === 'pro' ? 'pro' : ''}`}>
-            {user.plan === 'pro' ? '⚡ Pro Plan' : t('common.freePlan')}
-          </span>
         </div>
       </div>
 
       {/* Stats Row */}
       <div className="profile-stats-row">
-        {stats.map((s, i) => (
+        {statCards.map((s, i) => (
           <div key={i} className="profile-stat-card">
             <div className="profile-stat-icon">{s.icon}</div>
-            <div className="profile-stat-value">{s.value}</div>
+            <div className="profile-stat-value">
+              {loadingProfile ? <Loader2 size={16} className="animate-spin" /> : s.value}
+            </div>
             <div className="profile-stat-label">{s.label}</div>
           </div>
         ))}
@@ -129,14 +152,6 @@ const Profile = () => {
                   placeholder="+91 9876543210"
                 />
               </div>
-            </div>
-            <div className="profile-field">
-              <label>{t('profile.accountType')}</label>
-              <input
-                className="profile-input readonly"
-                value={user.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
-                readOnly
-              />
             </div>
             <button
               id="profile-save-btn"
@@ -188,7 +203,7 @@ const Profile = () => {
                 placeholder="••••••••"
               />
               {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                <p className="profile-field-error">Passwords do not match.</p>
+                <p className="profile-field-error">{language === 'hi' ? 'पासवर्ड मेल नहीं खाते।' : 'Passwords do not match.'}</p>
               )}
             </div>
             <button
@@ -235,6 +250,14 @@ const Profile = () => {
                 </button>
               </div>
             ))}
+            <button
+              id="save-notifications-btn"
+              className="profile-save-btn"
+              style={{ marginTop: '12px' }}
+              onClick={handleSaveProfile}
+            >
+              {saved === 'profile' ? <><Check size={14} /> {language === 'hi' ? 'सहेजा गया!' : 'Saved!'}</> : t('common.save')}
+            </button>
           </div>
         </section>
 

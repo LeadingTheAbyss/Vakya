@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import './Report.css';
 import { generateReport, API_BASE_URL } from '../api/client';
+import { useApp } from '../context/AppContext';
 
 const clauseCategories = [
   { label: 'Payment', pct: 22, color: '#ef4444' },
@@ -47,6 +48,7 @@ const Report = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useApp();
   const [isExporting, setIsExporting] = useState(false);
 
   const analyzedClauses = location.state?.analyzedClauses || [];
@@ -84,7 +86,7 @@ const Report = () => {
       {/* ── Header ── */}
       <div className="report-header">
         <button className="btn-back" onClick={() => navigate(`/app/analysis/${id}`)}>
-          <ArrowLeft size={15} /> Back to Analysis
+          <ArrowLeft size={15} /> {t('report.back')}
         </button>
         <button 
           className="btn btn-primary btn-sm" 
@@ -92,7 +94,7 @@ const Report = () => {
           disabled={isExporting}
         >
           {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} 
-          {isExporting ? 'Exporting...' : 'Export DOCX'}
+          {isExporting ? t('report.exporting') : t('report.exportDocx')}
         </button>
       </div>
 
@@ -105,25 +107,24 @@ const Report = () => {
           </div>
           <h2 className="report-doc-name">{filename}</h2>
           <div className="report-meta">
-            <span className="text-tertiary text-sm">Analyzed Jun 3, 2026 · Counterparty: TechCorp Solutions Pvt. Ltd.</span>
+            <span className="text-tertiary text-sm">{t('report.analyzedMeta')}</span>
             <span className="badge badge-critical report-risk-badge">
-              <ShieldAlert size={12} /> Risk Score: 72 / 100
+              <ShieldAlert size={12} /> {t('report.riskScore')} 72 / 100
             </span>
           </div>
         </div>
 
         {/* ── Executive Summary ── */}
         <section className="report-section">
-          <h4 className="report-section-title">Executive Summary</h4>
+          <h4 className="report-section-title">{t('report.execSummary')}</h4>
           <div className="report-summary-card">
             <p>
-              This contract poses a <strong className="text-critical">High Risk (72/100)</strong> to your business.
-              Two clauses create direct financial exposure: the payment terms allow the Client to withhold payments indefinitely,
-              and the termination notice of 7 days is insufficient to protect your pipeline. The contract also lacks two legally critical
-              protections — a jurisdiction clause and a GST compliance clause — both essential for Indian MSME contexts.
+              <strong className="text-critical">High Risk (72/100)</strong>
+              {' '}
+              {t('report.execSummaryText1')}
             </p>
             <p style={{ marginTop: 12 }}>
-              We recommend negotiating clauses 1 and 2 before signing, and inserting the AI-generated jurisdiction and GST clauses as conditions for agreement.
+              {t('report.execSummaryText2')}
             </p>
           </div>
         </section>
@@ -133,28 +134,28 @@ const Report = () => {
           <div className="report-stat report-stat--critical">
             <AlertTriangle size={20} />
             <div className="report-stat-val">2</div>
-            <div className="report-stat-label">Critical Risks</div>
+            <div className="report-stat-label">{t('report.criticalRisks')}</div>
           </div>
           <div className="report-stat report-stat--warning">
             <AlertTriangle size={20} />
             <div className="report-stat-val">1</div>
-            <div className="report-stat-label">Moderate Risks</div>
+            <div className="report-stat-label">{t('report.moderateRisks')}</div>
           </div>
           <div className="report-stat report-stat--missing">
             <FileText size={20} />
             <div className="report-stat-val">4</div>
-            <div className="report-stat-label">Missing Clauses</div>
+            <div className="report-stat-label">{t('report.missingClauses')}</div>
           </div>
           <div className="report-stat report-stat--safe">
             <CheckCircle2 size={20} />
             <div className="report-stat-val">1</div>
-            <div className="report-stat-label">Safe</div>
+            <div className="report-stat-label">{t('analysis.safe')}</div>
           </div>
         </div>
 
         {/* ── Clause Distribution ── */}
         <section className="report-section">
-          <h4 className="report-section-title">Clause Distribution</h4>
+          <h4 className="report-section-title">{t('report.clauseDist')}</h4>
           <div className="clause-dist-grid">
             {clauseCategories.map(cat => (
               <div key={cat.label} className="clause-dist-row">
@@ -173,7 +174,7 @@ const Report = () => {
 
         {/* ── Action Items ── */}
         <section className="report-section">
-          <h4 className="report-section-title">Required Actions Before Signing</h4>
+          <h4 className="report-section-title">{t('report.requiredActions')}</h4>
           <div className="action-list">
             {actionItems.map((item, i) => (
               <div key={i} className={`action-item action-item--${item.severity}`}>
@@ -195,7 +196,7 @@ const Report = () => {
         {/* ── Footer ── */}
         <div className="report-footer">
           <p className="text-tertiary text-sm">
-            Generated by Vakya on Jun 3, 2026. This report provides legal information, not legal advice. Consult a qualified legal professional for binding decisions.
+            {t('report.footer')}
           </p>
         </div>
       </div>

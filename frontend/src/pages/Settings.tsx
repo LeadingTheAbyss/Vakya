@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Globe, Moon, Sun, Sliders, Database, Info,
   Download, Trash2, ChevronRight, Check, ExternalLink
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { fetchConfig } from '../api/client';
 import './Settings.css';
 
 const Settings = () => {
@@ -13,6 +14,13 @@ const Settings = () => {
   const [maxClauses, setMaxClauses] = useState(20);
   const [ocrEnabled, setOcrEnabled] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [llmModel, setLlmModel] = useState('Loading...');
+
+  useEffect(() => {
+    fetchConfig()
+      .then(data => setLlmModel(data.ollama_model))
+      .catch(err => setLlmModel('Unknown'));
+  }, []);
 
   const showSaved = () => {
     setSaved(true);
@@ -211,7 +219,7 @@ const Settings = () => {
             </div>
             <div className="settings-about-row">
               <span className="settings-about-label">{t('settings.llmModel')}</span>
-              <span className="settings-about-value">llama3.2:1b (local)</span>
+              <span className="settings-about-value">{llmModel} (local)</span>
             </div>
             <button id="view-changelog-btn" className="settings-changelog-btn">
               {t('settings.changelog')} <ExternalLink size={12} />

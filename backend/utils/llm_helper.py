@@ -37,8 +37,8 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
         messages.insert(0, ("system", instruction))
         
     try:
-        # We can ask LangChain to force JSON format from Ollama if supported
-        response = llm.bind(format="json").invoke(messages)
+        # We rely on the prompt to format as JSON since format="json" can cause buffer overruns in some environments
+        response = llm.invoke(messages)
             
         content = response.content
         

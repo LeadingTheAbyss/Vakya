@@ -60,6 +60,12 @@
   letter-spacing: -0.02em;
 }
 
+.login-brand-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
 .login-left-content {
   flex: 1;
   display: flex;

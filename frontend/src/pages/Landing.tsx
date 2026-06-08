@@ -1,37 +1,32 @@
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, FileText, Scale, Brain, Zap, GitBranch } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import logoImg from '../images/logo.png';
 import './Landing.css';
 import HowItWorks from '../components/HowItWorks';
 import Y2KHero from '../components/Y2KHero';
 
 const features = [
   {
-    icon: <Brain size={28} strokeWidth={1.5} />,
     title: 'Multi-Agent Architecture',
     desc: 'Six specialized AI agents collaborate in sequence — ingestion, classification, compliance, risk assessment, negotiation, and summary.',
   },
   {
-    icon: <Scale size={28} strokeWidth={1.5} />,
     title: 'Indian Legal Compliance',
     desc: 'Purpose-built for Indian MSMEs. Checks GST clause validity, arbitration terms, jurisdiction clauses, and MSME Act protections.',
   },
   {
-    icon: <FileText size={28} strokeWidth={1.5} />,
     title: 'Surgical Redlining',
     desc: 'The Negotiator Agent does not rewrite your contract. It makes precise, word-level edits to neutralize risk while preserving intent.',
   },
   {
-    icon: <Zap size={28} strokeWidth={1.5} />,
     title: 'Hindi & English',
     desc: 'Fully bilingual interface. Upload contracts in Devanagari or English, get explanations in the language you prefer.',
   },
   {
-    icon: <GitBranch size={28} strokeWidth={1.5} />,
     title: 'Explainable AI',
     desc: 'Every risk flag links back to the exact clause in the original document. You see the reasoning, not just the verdict.',
   },
   {
-    icon: <ShieldCheck size={28} strokeWidth={1.5} />,
     title: 'Scanned Document OCR',
     desc: 'Handles low-quality scans, skewed pages, and printed contracts. Human-in-the-loop correction for critical extractions.',
   },
@@ -52,13 +47,11 @@ const Landing = () => {
       {/* ── Nav ── */}
       <nav className="landing-nav">
         <div className="nav-logo">
-          <ShieldCheck size={22} className="nav-logo-icon" />
-          <span>Vakya</span>
+          <img src={logoImg} alt="Vakya" className="nav-logo-img" />
         </div>
         <div className="nav-links">
           <a href="#features">Features</a>
           <a href="#how">How it works</a>
-          <a href="#pricing">Pricing</a>
         </div>
         <div className="nav-actions">
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/app')}>Log in</button>
@@ -94,7 +87,6 @@ const Landing = () => {
         <div className="features-grid">
           {features.map(f => (
             <div key={f.title} className="feature-card">
-              <div className="feature-icon">{f.icon}</div>
               <h4>{f.title}</h4>
               <p>{f.desc}</p>
             </div>
@@ -106,7 +98,7 @@ const Landing = () => {
       <section className="cta-banner">
         <div className="cta-banner-glow" />
         <h2>Stop signing contracts blind.</h2>
-        <p>The first analysis is free. No credit card required.</p>
+        <p>Start analyzing your contracts instantly.</p>
         <button
           className="btn btn-primary"
           style={{ padding: '11px 28px', fontSize: '14px', marginTop: '8px' }}
@@ -119,8 +111,7 @@ const Landing = () => {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="footer-logo">
-          <ShieldCheck size={16} />
-          <span>Vakya</span>
+          <img src={logoImg} alt="Vakya" className="footer-logo-img" />
         </div>
         <p className="text-tertiary text-sm">
           © 2026 Vakya. Not a substitute for legal advice.

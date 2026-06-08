@@ -5,6 +5,7 @@ import {
   ChevronUp, UploadCloud, User, LogOut, LogIn, UserPlus
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import logoImg from '../images/logo.png';
 import './Layout.css';
 
 const Layout = () => {
@@ -40,7 +41,7 @@ const Layout = () => {
       <aside className="sidebar">
         <div className="sidebar-top">
           <button className="sidebar-brand" onClick={() => navigate('/')}>
-            <span className="brand-name">Vakya</span>
+            <img src={logoImg} alt="Vakya" className="sidebar-logo-img" />
           </button>
 
           <nav className="sidebar-nav">
@@ -114,9 +115,6 @@ const Layout = () => {
                 </div>
                 <div className="user-meta">
                   <span className="user-name">{user.name}</span>
-                  <span className="user-plan">
-                    {user.plan === 'pro' ? '⚡ Pro Plan' : t('common.freePlan')}
-                  </span>
                 </div>
                 <ChevronUp
                   size={14}
@@ -154,7 +152,7 @@ const Layout = () => {
             <Search size={14} className="topbar-search-icon" />
             <input
               type="text"
-              placeholder="Search contracts, clauses, counterparties..."
+              placeholder={t('layout.searchPlaceholder')}
               className="topbar-search-input"
             />
             <kbd className="topbar-kbd">⌘K</kbd>

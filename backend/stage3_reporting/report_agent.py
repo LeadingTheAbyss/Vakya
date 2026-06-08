@@ -4,7 +4,7 @@ import os
 import json
 from utils.llm_helper import invoke_structured
 
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-r1:14b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
 class ExecutiveSummary(BaseModel):
     executive_summary: str = Field(description="A simple human-readable overview of the contract.")
@@ -12,7 +12,7 @@ class ExecutiveSummary(BaseModel):
     key_recommendations: list[str] = Field(description="High-level strategic recommendations for the negotiation.")
 
 def generate_report_summary(analyzed_clauses: list[dict]) -> dict:
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2)
+    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2, num_ctx=2048)
     
     # We only want to send a simplified version of the analysis to the LLM to save context window
     simplified_analysis = []

@@ -3,10 +3,12 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft, CheckCircle2, AlertTriangle, FileSearch, Scale,
   Brain, ShieldAlert, ChevronRight, ChevronDown, Languages, Copy,
-  RotateCcw, X, Layers, GitBranch, FileText, ExternalLink, Loader2, Download
+  RotateCcw, X, Layers, GitBranch, FileText, ExternalLink, Loader2, Download, Clock
 } from 'lucide-react';
 import './Analysis.css';
-import { uploadDocument, analyzeDocument } from '../api/client';
+import { uploadDocument, analyzeDocument, saveContract, fetchContractDetail } from '../api/client';
+import { useApp } from '../context/AppContext';
+import ContractChat from '../components/ContractChat';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface AgentStep {
@@ -159,23 +161,93 @@ const Analysis = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, t, language, setLanguage } = useApp();
   const file = location.state?.file as File | undefined;
+
+  // A UUID id with no file = open a cached contract from DB
+  const isCached = !!id && id !== 'new' && !file;
 
   const [, setLoadingStep] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'trace' | 'risks' | 'rewrite'>('trace');
   const [selectedClause, setSelectedClause] = useState<Clause | null>(null);
-  const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [expandedAgents, setExpandedAgents] = useState<Set<number>>(new Set([1, 2, 3]));
   const [agents, setAgents] = useState<AgentStep[]>(
     agentStepsData.map((a, i) => ({ ...a, status: i === 0 ? 'active' : 'pending' }))
   );
   const [realClauses, setRealClauses] = useState<Clause[]>(clausesData);
+  const [cachedFilename, setCachedFilename] = useState<string | null>(null);
+  const [cachedRiskScore, setCachedRiskScore] = useState<number>(0);
+  const [estimatedSeconds, setEstimatedSeconds] = useState(() => {
+    if (!file) return 50;
+    const sizeMB = file.size / (1024 * 1024);
+    
+    // AI Pipeline takes heavy base time (LLM chaining, OCR, segmentation)
+    let baseTime = 40;
+    if (file.type && file.type.startsWith('image/')) {
+      baseTime += 15; // Extra overhead for Image OCR
+    } else if (file.type === 'application/pdf') {
+      baseTime += 5; // Extra overhead for PDF parsing
+    }
 
-  // Loading simulation & Integration
+    // Hardware heuristic: assuming backend runs locally, read local system specs
+    const cores = navigator.hardwareConcurrency || 4;
+    const memory = (navigator as any).deviceMemory || 8; // GB of RAM
+    
+    // Adjust timing: faster machines (more cores + ram) take less time.
+    // e.g., 8 cores -> 0.5x time. 16GB RAM -> 0.5x time.
+    const cpuFactor = Math.max(0.4, 4 / cores);
+    const ramFactor = Math.max(0.5, 8 / memory);
+    const hardwareFactor = cpuFactor * ramFactor;
+
+    // ~45s per MB + base time, multiplied by how powerful the machine is
+    const finalEstimate = Math.round((sizeMB * 45 + baseTime) * hardwareFactor);
+    
+    // Clamp between 15s and 5 minutes
+    return Math.max(15, Math.min(300, finalEstimate));
+  });
+
+  useEffect(() => {
+    if (isLoaded) return;
+    const interval = setInterval(() => {
+      setEstimatedSeconds(prev => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLoaded]);
+
+  // ── Load cached contract OR run pipeline ──────────────────────────────────────
   useEffect(() => {
     if (isLoaded) return;
 
+    // ── Case 1: Existing contract from DB (no file in state, id is a UUID) ──
+    if (isCached && id) {
+      fetchContractDetail(id)
+        .then(({ contract }) => {
+          setCachedFilename(contract.filename);
+          setCachedRiskScore(contract.risk_score ?? 0);
+          const stored: Clause[] = (contract.clauses_json || []).map((c: any, i: number) => ({
+            id: i + 1,
+            title: c.title || `Clause ${i + 1}`,
+            type: c.type || 'General',
+            risk: c.risk || 'warning',
+            text: c.text || null,
+            original: c.original || null,
+            rewrite: c.rewrite || null,
+            issue: c.issue || { en: '', hi: '' },
+            suggestion: c.suggestion || { en: '', hi: '' },
+          }));
+          setRealClauses(stored);
+          setAgents(agentStepsData); // show all steps as done
+          setIsLoaded(true);
+        })
+        .catch(() => {
+          // Fallback: show mock data
+          setIsLoaded(true);
+        });
+      return;
+    }
+
+    // ── Case 2: Demo view (no file, id = 'new' or non-UUID) ──
     if (!file) {
       const interval = setInterval(() => {
         setLoadingStep(prev => {
@@ -200,6 +272,7 @@ const Analysis = () => {
       return () => clearInterval(interval);
     }
 
+    // ── Case 3: Real new analysis ──
     const runAnalysis = async () => {
       try {
         setAgents(current => current.map((a, i) => i === 0 ? { ...a, status: 'active' } : a));
@@ -235,7 +308,6 @@ const Analysis = () => {
         ));
         
         // Map backend output to Clause[]
-        // Backend returns nested objects: clause_info, risk_info, compliance_info, negotiation_info
         const mappedClauses: Clause[] = analyzed_clauses.map((c: any, index: number) => {
           const clauseInfo = c.clause_info || {};
           const riskInfo = c.risk_info || {};
@@ -290,15 +362,34 @@ const Analysis = () => {
           i === 4 ? { ...a, status: 'done', thoughts: ['Generated safe rewrites'] } : a
         ));
 
+        // 3. Save to DB if user is logged in
+        if (user?.id) {
+          const criticals = mappedClauses.filter(c => c.risk === 'critical').length;
+          const riskScore = Math.round(
+            mappedClauses.reduce((acc, c) => acc + (c.risk === 'critical' ? 80 : c.risk === 'warning' ? 50 : 15), 0) /
+            Math.max(mappedClauses.length, 1)
+          );
+          const riskLevel = criticals > 0 ? 'high' : riskScore > 40 ? 'medium' : 'low';
+          saveContract({
+            user_id: user.id,
+            filename: file.name,
+            risk_score: riskScore,
+            risk_level: riskLevel,
+            clauses: mappedClauses,
+            summary: { total: mappedClauses.length, critical: criticals },
+            status: 'review',
+          }).catch(console.error);
+        }
+
         setIsLoaded(true);
       } catch (err) {
-        console.error("Analysis failed", err);
+        console.error('Analysis failed', err);
         setIsLoaded(true);
       }
     };
     
     runAnalysis();
-  }, [isLoaded, file]);
+  }, [isLoaded, file, isCached, id, user?.id]);
 
   const toggleAgentExpand = (id: number) => {
     setExpandedAgents(prev => {
@@ -316,12 +407,19 @@ const Analysis = () => {
           <div className="loading-header">
             <div className="loading-orb animate-pulse-glow" />
             <div>
-              <h3>Processing Contract</h3>
+              <h3>{t('analysis.processing')}</h3>
               <p className="text-secondary text-sm">
                 {file ? file.name : 'Vendor_Agreement_TechCorp.pdf'}
               </p>
             </div>
           </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', marginBottom: '24px' }}>
+            <Clock size={16} className="text-ai" />
+            <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{t('analysis.estimatedTime')}</span>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>~{estimatedSeconds}s</span>
+          </div>
+
           <div className="loading-steps">
             {agents.map((step, _index) => (
               <div key={step.id} className={`loading-step loading-step--${step.status}`}>
@@ -349,13 +447,16 @@ const Analysis = () => {
     <div className="analysis-workspace">
       {/* ── Workspace Header ── */}
       <div className="workspace-header">
-        <button className="btn-back" onClick={() => navigate('/app')}>
-          <ArrowLeft size={15} /> Repository
+        <button className="btn-back" onClick={() => navigate('/app/repository')}>
+          <ArrowLeft size={15} /> {t('analysis.repository')}
         </button>
         <div className="workspace-title">
           <FileText size={15} className="text-tertiary" />
-          <span>{file ? file.name : 'Vendor_Agreement_TechCorp.pdf'}</span>
-          <span className="badge badge-critical">Risk 72/100</span>
+          <span>{isCached ? (cachedFilename || 'Contract') : (file ? file.name : 'Vendor_Agreement_TechCorp.pdf')}</span>
+          <span className="badge badge-critical">
+            {t('analysis.risk')} {isCached ? cachedRiskScore : 72}/100
+          </span>
+          {isCached && <span className="badge badge-safe" style={{ marginLeft: 4 }}>{t('analysis.cached')}</span>}
         </div>
         <div className="workspace-header-actions">
           <button
@@ -369,7 +470,7 @@ const Analysis = () => {
             className="btn btn-primary btn-sm"
             onClick={() => navigate(`/app/report/${id}`, { state: { analyzedClauses: realClauses, filename: file ? file.name : 'Vendor_Agreement_TechCorp.pdf' } })}
           >
-            Generate Report
+            {t('analysis.generateReport')}
             <ExternalLink size={13} />
           </button>
         </div>
@@ -380,8 +481,8 @@ const Analysis = () => {
         {/* ── Left: Document Viewer ── */}
         <div className="doc-pane">
           <div className="pane-header">
-            <span className="pane-header-title">Document</span>
-            <span className="text-tertiary text-sm">Page 1 of 12</span>
+            <span className="pane-header-title">{t('analysis.document')}</span>
+            <span className="text-tertiary text-sm">{t('analysis.page')} 1 {t('analysis.of')} 12</span>
           </div>
           <div className="doc-viewer">
             <div className="mock-doc">
@@ -418,7 +519,7 @@ const Analysis = () => {
                   onClick={() => { setSelectedClause(realClauses[3]); setActiveTab('risks'); }}
                 >
                   <AlertTriangle size={14} />
-                  <span>Missing: Jurisdiction & Governing Law clause</span>
+                  <span>{t('analysis.missingClause')}</span>
                 </div>
               )}
             </div>
@@ -432,20 +533,20 @@ const Analysis = () => {
               className={`pane-tab ${activeTab === 'trace' ? 'active' : ''}`}
               onClick={() => setActiveTab('trace')}
             >
-              <GitBranch size={14} /> Agent Trace
+              <GitBranch size={14} /> {t('analysis.agentTrace')}
             </button>
             <button
               className={`pane-tab ${activeTab === 'risks' ? 'active' : ''}`}
               onClick={() => { setActiveTab('risks'); setSelectedClause(null); }}
             >
-              <ShieldAlert size={14} /> Risk & Redlines
+              <ShieldAlert size={14} /> {t('analysis.risksRedlines')}
               <span className="pane-tab-count">4</span>
             </button>
             <button
               className={`pane-tab ${activeTab === 'rewrite' ? 'active' : ''}`}
               onClick={() => { setActiveTab('rewrite'); setSelectedClause(null); }}
             >
-              <FileText size={14} /> MSME Draft
+              <FileText size={14} /> {t('analysis.msmeDraft')}
             </button>
           </div>
 
@@ -456,11 +557,11 @@ const Analysis = () => {
                 <div className="trace-summary">
                   <div className="trace-summary-item">
                     <CheckCircle2 size={13} className="text-safe" />
-                    <span className="text-secondary text-sm">5 agents completed</span>
+                    <span className="text-secondary text-sm">5 {t('analysis.agentsCompleted')}</span>
                   </div>
                   <div className="trace-summary-item">
                     <AlertTriangle size={13} className="text-critical" />
-                    <span className="text-secondary text-sm">3 critical issues</span>
+                    <span className="text-secondary text-sm">3 {t('analysis.criticalIssues')}</span>
                   </div>
                 </div>
 
@@ -508,16 +609,16 @@ const Analysis = () => {
               <div className="risk-overview animate-fade-up">
                 <div className="risk-summary-cards">
                   <div className="risk-summary-card risk-summary-card--critical">
-                    <AlertTriangle size={16} /> <span>2 Critical</span>
+                    <AlertTriangle size={16} /> <span>2 {t('analysis.critical')}</span>
                   </div>
                   <div className="risk-summary-card risk-summary-card--warning">
-                    <AlertTriangle size={16} /> <span>1 Moderate</span>
+                    <AlertTriangle size={16} /> <span>1 {t('analysis.moderate')}</span>
                   </div>
                   <div className="risk-summary-card risk-summary-card--missing">
-                    <X size={16} /> <span>1 Missing</span>
+                    <X size={16} /> <span>1 {t('analysis.missing')}</span>
                   </div>
                   <div className="risk-summary-card risk-summary-card--safe">
-                    <CheckCircle2 size={16} /> <span>1 Safe</span>
+                    <CheckCircle2 size={16} /> <span>1 {t('analysis.safe')}</span>
                   </div>
                 </div>
 
@@ -543,7 +644,7 @@ const Analysis = () => {
                         </p>
                       )}
                       <div className="clause-card-footer">
-                        <span className="text-sm text-ai">View analysis</span>
+                        <span className="text-sm text-ai">{t('analysis.viewAnalysis')}</span>
                         <ChevronRight size={13} className="text-ai" />
                       </div>
                     </div>
@@ -560,7 +661,7 @@ const Analysis = () => {
                     className="btn-back"
                     onClick={() => setSelectedClause(null)}
                   >
-                    <ArrowLeft size={14} /> All clauses
+                    <ArrowLeft size={14} /> {t('analysis.allClauses')}
                   </button>
                   <span className={`badge badge-${selectedClause.risk === 'critical' ? 'critical' : selectedClause.risk === 'warning' ? 'warning' : selectedClause.risk === 'safe' ? 'safe' : 'missing'}`}>
                     {selectedClause.risk}
@@ -573,7 +674,7 @@ const Analysis = () => {
                   {/* Original Clause */}
                   {selectedClause.text && (
                     <div className="detail-section">
-                      <div className="detail-label">Original Clause</div>
+                      <div className="detail-label">{t('analysis.originalText')}</div>
                       <div className="detail-original">
                         "{selectedClause.text}"
                       </div>
@@ -584,7 +685,7 @@ const Analysis = () => {
                   <div className={`detail-risk-box detail-risk-box--${selectedClause.risk}`}>
                     <div className="detail-risk-header">
                       <AlertTriangle size={14} />
-                      What is the risk?
+                      {t('analysis.whatIsRisk')}
                     </div>
                     <p className={language === 'hi' ? 'lang-hi' : ''}>
                       {selectedClause.issue[language]}
@@ -593,7 +694,7 @@ const Analysis = () => {
 
                   {/* Suggestion */}
                   <div className="detail-section">
-                    <div className="detail-label">Recommended Action</div>
+                    <div className="detail-label">{t('analysis.recommendedAction')}</div>
                     <p className={`detail-suggestion ${language === 'hi' ? 'lang-hi' : ''}`}>
                       {selectedClause.suggestion[language]}
                     </p>
@@ -603,7 +704,7 @@ const Analysis = () => {
                   {selectedClause.rewrite && (
                     <div className="detail-section">
                       <div className="detail-label-row">
-                        <div className="detail-label text-safe">Safer Wording</div>
+                        <div className="detail-label text-safe">{t('analysis.saferWording')}</div>
                         <button className="btn-icon btn-sm">
                           <Copy size={13} />
                         </button>
@@ -617,13 +718,13 @@ const Analysis = () => {
                   {/* Actions */}
                   <div className="detail-actions">
                     <button className="btn btn-ghost btn-sm">
-                      <RotateCcw size={13} /> Remix
+                      <RotateCcw size={13} /> {t('analysis.remix')}
                     </button>
                     <button className="btn btn-danger btn-sm">
-                      Flag for Lawyer
+                      {t('analysis.flagForLawyer')}
                     </button>
                     <button className="btn btn-safe btn-sm">
-                      Accept Rewrite
+                      {t('analysis.acceptRewrite')}
                     </button>
                   </div>
                 </div>
@@ -634,17 +735,19 @@ const Analysis = () => {
             {activeTab === 'rewrite' && (
               <div className="rewrite-pane animate-fade-up" style={{ padding: '24px' }}>
                 <div className="rewrite-header" style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>Negotiated MSME Draft</h3>
+                  <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>{t('analysis.negotiatedDraft')}</h3>
                   <p className="text-secondary" style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                    This AI-generated draft resolves {realClauses.filter(c => c.rewrite).length} critical issues and highlights {realClauses.filter(c => c.risk === 'critical').length} high-risk clauses to protect your MSME rights.
+                    {t('analysis.draftDesc')
+                      .replace('{rewrites}', realClauses.filter(c => c.rewrite).length.toString())
+                      .replace('{highRisk}', realClauses.filter(c => c.risk === 'critical').length.toString())}
                   </p>
                   <button className="btn btn-primary" style={{ marginTop: '20px' }}>
-                    <Download size={14} /> Download Revised PDF
+                    <Download size={14} /> {t('analysis.downloadPdf')}
                   </button>
                 </div>
 
                 <div className="rewrite-changes" style={{ marginBottom: '32px' }}>
-                  <h4 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '16px' }}>Summary of Changes Made</h4>
+                  <h4 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '16px' }}>{t('analysis.summaryOfChanges')}</h4>
                   <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px', listStyle: 'none', padding: 0 }}>
                     {realClauses.filter(c => c.rewrite).map(clause => (
                       <li key={clause.id} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
@@ -655,13 +758,13 @@ const Analysis = () => {
                       </li>
                     ))}
                     {realClauses.filter(c => c.rewrite).length === 0 && (
-                      <li style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>No rewrites were generated for this document.</li>
+                      <li style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{t('analysis.noRewrites')}</li>
                     )}
                   </ul>
                 </div>
 
                 <div className="rewrite-diff">
-                  <h4 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '16px' }}>Redlines Review</h4>
+                  <h4 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '16px' }}>{t('analysis.redlinesReview')}</h4>
                   <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', padding: '20px', fontSize: '13px', lineHeight: '1.7', fontFamily: 'var(--font-mono, monospace)', overflowX: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {realClauses.filter(c => c.risk === 'critical' || c.risk === 'warning' || c.rewrite).map(clause => (
                       <div key={clause.id}>
@@ -683,7 +786,7 @@ const Analysis = () => {
                       </div>
                     ))}
                     {realClauses.filter(c => c.risk !== 'safe').length === 0 && (
-                      <div className="text-tertiary">No issues detected — all clauses appear safe.</div>
+                      <div className="text-tertiary">{t('analysis.noIssues')}</div>
                     )}
                   </div>
                 </div>
@@ -692,6 +795,12 @@ const Analysis = () => {
           </div>
         </div>
       </div>
+      {isLoaded && (
+        <ContractChat
+          clauses={realClauses}
+          filename={isCached ? (cachedFilename || undefined) : (file ? file.name : undefined)}
+        />
+      )}
     </div>
   );
 };
