@@ -37,8 +37,11 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
         messages.insert(0, ("system", instruction))
         
     try:
-        # We rely on the prompt to format as JSON since format="json" can cause buffer overruns in some environments
-        response = llm.invoke(messages)
+        # We strictly bind format="json" to enforce valid JSON generation at the API level
+        if hasattr(llm, "bind"):
+            response = llm.bind(format="json").invoke(messages)
+        else:
+            response = llm.invoke(messages)
             
         content = response.content
         
@@ -56,7 +59,32 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
             
         from langchain_core.output_parsers import JsonOutputParser
         parser = JsonOutputParser()
-        data = parser.parse(json_str)
+        
+        try:
+            data = parser.parse(json_str)
+        except Exception as e_parse:
+            # Fallback heuristic parser for Markdown output (e.g. **Category:** Value)
+            fallback_data = {}
+            for k, v in schema_cls.model_fields.items():
+                # Matches **Key:** or **Key Name:** or Key:
+                pattern = r'(?:\*\*)?(?:' + k + r'|' + k.replace('_', ' ').title() + r')(?:\*\*)?\s*:\s*(.*?)(?=(?:\*\*)?[A-Z][a-zA-Z\s_]+(?:\*\*)?\s*:|$)'
+                match = re.search(pattern, content, re.IGNORECASE | re.DOTALL)
+                if match:
+                    val = match.group(1).strip()
+                    ann_str = str(v.annotation).lower()
+                    if 'list' in ann_str:
+                        # Convert bullet points or numbered lists to list
+                        val = [item.strip('- 1234567890.') for item in val.split('\n') if item.strip()]
+                    fallback_data[k] = val
+                else:
+                    ann_str = str(v.annotation).lower()
+                    fallback_data[k] = [] if 'list' in ann_str else ""
+            
+            # If we managed to extract at least one value successfully, use the fallback data
+            if any(fallback_data.values()):
+                data = fallback_data
+            else:
+                raise e_parse
         
         if isinstance(data, dict):
             # Unwrap if model hallucinated a "properties" wrapper
@@ -97,4 +125,10 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
         logger.error(error_msg)
         with open("llm_error.log", "a", encoding="utf-8") as f:
             f.write(error_msg + "\n" + "-"*40 + "\n")
-        raise e
+            
+        # Absolute failsafe: return default data instead of crashing
+        default_data = {}
+        for k, v in schema_cls.model_fields.items():
+            ann_str = str(v.annotation).lower()
+            default_data[k] = [] if 'list' in ann_str else "Information not available."
+        return schema_cls(**default_data)

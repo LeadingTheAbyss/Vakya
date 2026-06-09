@@ -35,7 +35,7 @@ interface Clause {
 // ── Mock Data ──────────────────────────────────────────────────────────────────
 const agentStepsData: AgentStep[] = [
   {
-    id: 1, name: 'Doc Ingestion', desc: 'Parsing PDF, running OCR on pages 1–12',
+    id: 1, name: 'Doc Ingestion', desc: 'Parsing document and running OCR...',
     status: 'done', icon: <FileSearch size={14} />,
     thoughts: [
       'Detected document language: English (primary)',
@@ -45,7 +45,7 @@ const agentStepsData: AgentStep[] = [
     ],
   },
   {
-    id: 2, name: 'Clause Classification', desc: 'Segmented 42 clauses across 11 categories',
+    id: 2, name: 'Clause Classification', desc: 'Segmenting clauses by category...',
     status: 'done', icon: <Layers size={14} />,
     thoughts: [
       'Payment Terms: 3 clauses merged',
@@ -55,7 +55,7 @@ const agentStepsData: AgentStep[] = [
     ],
   },
   {
-    id: 3, name: 'Compliance Check', desc: 'Verifying GST clauses, jurisdiction, arbitration',
+    id: 3, name: 'Compliance Check', desc: 'Verifying legal and regulatory compliance...',
     status: 'done', icon: <Scale size={14} />,
     thoughts: [
       'GST clause: ABSENT — high risk for interstate SaaS supply',
@@ -65,7 +65,7 @@ const agentStepsData: AgentStep[] = [
     ],
   },
   {
-    id: 4, name: 'Risk Assessment', desc: 'Scored 12 clauses · 3 critical, 2 moderate',
+    id: 4, name: 'Risk Assessment', desc: 'Evaluating clauses for one-sided risks...',
     status: 'done', icon: <ShieldAlert size={14} />,
     thoughts: [
       'Aggregate risk score: 72/100',
@@ -75,7 +75,7 @@ const agentStepsData: AgentStep[] = [
     ],
   },
   {
-    id: 5, name: 'Negotiator Agent', desc: 'Generated safe rewrites for all critical clauses',
+    id: 5, name: 'Negotiator Agent', desc: 'Drafting safer alternative wording...',
     status: 'done', icon: <Brain size={14} />,
     thoughts: [
       'Payment rewrite: Net-30, objective dispute trigger',
@@ -178,76 +178,10 @@ const Analysis = () => {
   const [realClauses, setRealClauses] = useState<Clause[]>(clausesData);
   const [cachedFilename, setCachedFilename] = useState<string | null>(null);
   const [cachedRiskScore, setCachedRiskScore] = useState<number>(0);
-  const [estimatedSeconds, setEstimatedSeconds] = useState(50);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    if (!file) return;
 
-    let isMounted = true;
-
-    const calculateEstimate = (model: string) => {
-      const sizeMB = file.size / (1024 * 1024);
-      
-      // AI Pipeline takes heavy base time (LLM chaining, OCR, segmentation)
-      let baseTime = 40;
-      if (file.type && file.type.startsWith('image/')) {
-        baseTime += 15; // Extra overhead for Image OCR
-      } else if (file.type === 'application/pdf') {
-        baseTime += 5; // Extra overhead for PDF parsing
-      }
-
-      // Hardware heuristic: assuming backend runs locally, read local system specs
-      const cores = navigator.hardwareConcurrency || 4;
-      const memory = (navigator as any).deviceMemory || 8; // GB of RAM
-      
-      // Adjust timing: faster machines (more cores + ram) take less time.
-      const cpuFactor = Math.max(0.4, 4 / cores);
-      const ramFactor = Math.max(0.5, 8 / memory);
-      const hardwareFactor = cpuFactor * ramFactor;
-
-      // Adjust timing based on the LLM model
-      let modelFactor = 1.0;
-      const lowerModel = model.toLowerCase();
-      if (lowerModel.includes('qwen3')) {
-        modelFactor = 1.5;
-      } else if (lowerModel.includes('llama3') || lowerModel.includes('llama')) {
-        modelFactor = 1.2;
-      } else if (lowerModel.includes('gemini') || lowerModel.includes('pro') || lowerModel.includes('gpt')) {
-        modelFactor = 0.8; // Faster API models
-      } else if (lowerModel.includes('32b') || lowerModel.includes('70b') || lowerModel.includes('72b')) {
-        modelFactor = 3.0; // Very large local models
-      } else if (lowerModel.includes('8b') || lowerModel.includes('7b')) {
-        modelFactor = 1.2;
-      }
-
-      // ~45s per MB + base time, multiplied by how powerful the machine is and the model
-      const finalEstimate = Math.round((sizeMB * 45 + baseTime) * hardwareFactor * modelFactor);
-      
-      // Clamp between 15s and 10 minutes
-      return Math.max(15, Math.min(600, finalEstimate));
-    };
-
-    // Set initial estimate using a default unknown model
-    setEstimatedSeconds(calculateEstimate('Unknown'));
-
-    // Fetch the actual model being used from the backend configuration
-    fetchConfig()
-      .then(config => {
-        if (!isMounted) return;
-        setEstimatedSeconds(calculateEstimate(config.ollama_model || 'Unknown'));
-      })
-      .catch(console.error);
-
-    return () => { isMounted = false; };
-  }, [file]);
-
-  useEffect(() => {
-    if (isLoaded) return;
-    const interval = setInterval(() => {
-      setEstimatedSeconds(prev => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isLoaded]);
 
   // ── Load cached contract OR run pipeline ──────────────────────────────────────
   useEffect(() => {
@@ -259,6 +193,7 @@ const Analysis = () => {
         .then(({ contract }) => {
           setCachedFilename(contract.filename);
           setCachedRiskScore(contract.risk_score ?? 0);
+          setTotalPages(contract.summary_json?.page_count || 1);
           const stored: Clause[] = (contract.clauses_json || []).map((c: any, i: number) => ({
             id: i + 1,
             title: c.title || `Clause ${i + 1}`,
@@ -271,7 +206,13 @@ const Analysis = () => {
             suggestion: c.suggestion || { en: '', hi: '' },
           }));
           setRealClauses(stored);
-          setAgents(agentStepsData); // show all steps as done
+          setAgents([
+            { id: 1, name: 'Doc Ingestion', desc: `Parsed ${contract.summary_json?.page_count || 1} pages`, status: 'done', icon: <FileSearch size={14} />, thoughts: [`Processed ${contract.filename}`] },
+            { id: 2, name: 'Clause Classification', desc: `Segmented ${stored.length} clauses`, status: 'done', icon: <Layers size={14} />, thoughts: [`Total clauses: ${stored.length}`] },
+            { id: 3, name: 'Compliance Check', desc: `Verified ${stored.length} clauses against standards`, status: 'done', icon: <Scale size={14} />, thoughts: ['Compliance check complete'] },
+            { id: 4, name: 'Risk Assessment', desc: `Scored ${stored.length} clauses · ${stored.filter(c => c.risk === 'critical').length} critical`, status: 'done', icon: <ShieldAlert size={14} />, thoughts: ['Risk assessment complete'] },
+            { id: 5, name: 'Negotiator Agent', desc: `Generated safe rewrites`, status: 'done', icon: <Brain size={14} />, thoughts: ['Rewrites generated'] },
+          ]);
           setIsLoaded(true);
         })
         .catch(() => {
@@ -313,33 +254,34 @@ const Analysis = () => {
         
         // 1. Upload
         const uploadRes = await uploadDocument(file);
-        const { clauses } = uploadRes;
+        const { clauses, document_info } = uploadRes;
+        
+        if (document_info?.page_count) {
+          setTotalPages(document_info.page_count);
+        }
+        
+
         
         setAgents(current => current.map((a, i) => 
-          i === 0 ? { ...a, status: 'done', thoughts: [`Processed ${file.name}`, `Detected clauses: ${clauses.length}`] } : 
+          i === 0 ? { ...a, status: 'done', desc: `Parsed ${document_info?.page_count || 1} pages`, thoughts: [`Processed ${file.name}`, `Detected clauses: ${clauses.length}`] } : 
           i === 1 ? { ...a, status: 'active' } : a
         ));
         
         await new Promise(resolve => setTimeout(resolve, 800));
         setAgents(current => current.map((a, i) => 
-          i === 1 ? { ...a, status: 'done', thoughts: [`Segmented ${clauses.length} clauses`] } : 
+          i === 1 ? { ...a, status: 'done', desc: `Segmented ${clauses.length} clauses`, thoughts: [`Segmented ${clauses.length} clauses`] } : 
           i === 2 ? { ...a, status: 'active' } : a
         ));
         
         await new Promise(resolve => setTimeout(resolve, 800));
         setAgents(current => current.map((a, i) => 
-          i === 2 ? { ...a, status: 'done', thoughts: ['Compliance check passed initial scan'] } : 
+          i === 2 ? { ...a, status: 'done', desc: `Verified ${clauses.length} clauses against standards`, thoughts: ['Compliance check passed initial scan'] } : 
           i === 3 ? { ...a, status: 'active' } : a
         ));
 
         // 2. Analyze
         const analyzeRes = await analyzeDocument(clauses);
         const { analyzed_clauses } = analyzeRes;
-        
-        setAgents(current => current.map((a, i) => 
-          i === 3 ? { ...a, status: 'done', thoughts: [`Scored ${analyzed_clauses.length} clauses`] } : 
-          i === 4 ? { ...a, status: 'active' } : a
-        ));
         
         // Map backend output to Clause[]
         const mappedClauses: Clause[] = analyzed_clauses.map((c: any, index: number) => {
@@ -391,9 +333,19 @@ const Analysis = () => {
         
         setRealClauses(mappedClauses);
 
-        await new Promise(resolve => setTimeout(resolve, 800));
+        const criticals = mappedClauses.filter(c => c.risk === 'critical').length;
+        const warnings = mappedClauses.filter(c => c.risk === 'warning').length;
+
         setAgents(current => current.map((a, i) => 
-          i === 4 ? { ...a, status: 'done', thoughts: ['Generated safe rewrites'] } : a
+          i === 3 ? { ...a, status: 'done', desc: `Scored ${mappedClauses.length} clauses · ${criticals} critical, ${warnings} moderate`, thoughts: [`Scored ${analyzed_clauses.length} clauses`] } : 
+          i === 4 ? { ...a, status: 'active' } : a
+        ));
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const rewritesCount = mappedClauses.filter(c => c.rewrite).length;
+        setAgents(current => current.map((a, i) => 
+          i === 4 ? { ...a, status: 'done', desc: `Generated ${rewritesCount} safe rewrites`, thoughts: ['Generated safe rewrites'] } : a
         ));
 
         // 3. Save to DB if user is logged in
@@ -410,7 +362,7 @@ const Analysis = () => {
             risk_score: riskScore,
             risk_level: riskLevel,
             clauses: mappedClauses,
-            summary: { total: mappedClauses.length, critical: criticals },
+            summary: { total: mappedClauses.length, critical: criticals, page_count: document_info?.page_count || 1 },
             status: 'review',
           }).catch(console.error);
         }
@@ -433,6 +385,60 @@ const Analysis = () => {
     });
   };
 
+  const handleDownloadPdf = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const docName = isCached ? (cachedFilename || 'Contract') : (file ? file.name : 'Vendor_Agreement_TechCorp.pdf');
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Revised Draft - ${docName}</title>
+          <style>
+            body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; padding: 40px; color: #1a1a1a; max-width: 800px; margin: 0 auto; }
+            h2 { color: #1a1a1a; margin-bottom: 24px; border-bottom: 2px solid #eaeaea; padding-bottom: 8px; }
+            .clause-diff { margin-bottom: 24px; padding: 16px; border: 1px solid #eaeaea; border-radius: 8px; }
+            .title { font-weight: 600; color: #666; margin-bottom: 12px; }
+            .original { background-color: #fef2f2; color: #991b1b; padding: 8px 12px; margin: 8px 0; border-left: 3px solid #ef4444; text-decoration: line-through; }
+            .rewrite { background-color: #ecfdf5; color: #065f46; padding: 8px 12px; margin: 8px 0; border-left: 3px solid #10b981; }
+            .warning { background-color: #fefce8; color: #854d0e; padding: 8px 12px; margin: 8px 0; border-left: 3px solid #eab308; }
+            .footer { margin-top: 40px; font-size: 12px; color: #666; text-align: center; }
+            @media print {
+              body { padding: 0; }
+              .clause-diff { page-break-inside: avoid; }
+            }
+          </style>
+        </head>
+        <body>
+          <h2>MSME Revised Contract Draft</h2>
+          <p><strong>Original Document:</strong> ${docName}</p>
+          <div style="margin-top: 30px;">
+            ${realClauses.filter(c => c.risk === 'critical' || c.risk === 'warning' || c.rewrite).map(clause => `
+              <div class="clause-diff">
+                <div class="title">... [${clause.title}] ...</div>
+                ${clause.original ? `<div class="original">- ${clause.original}</div>` : ''}
+                ${clause.rewrite 
+                  ? `<div class="rewrite">+ ${clause.rewrite}</div>` 
+                  : `<div class="warning">⚠ ${clause.issue.en || 'Review required'}</div>`}
+              </div>
+            `).join('')}
+          </div>
+          <div class="footer">Generated by Vakya Legal Business Advisor</div>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
   // ── Loading Screen ──
   if (!isLoaded) {
     return (
@@ -448,11 +454,7 @@ const Analysis = () => {
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', marginBottom: '24px' }}>
-            <Clock size={16} className="text-ai" />
-            <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{t('analysis.estimatedTime')}</span>
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>~{estimatedSeconds}s</span>
-          </div>
+
 
           <div className="loading-steps">
             {agents.map((step, _index) => (
@@ -476,6 +478,17 @@ const Analysis = () => {
     );
   }
 
+  // ── Computed Stats ──
+  const currentRiskScore = isCached ? cachedRiskScore : Math.round(
+    realClauses.reduce((acc, c) => acc + (c.risk === 'critical' ? 80 : c.risk === 'warning' ? 50 : 15), 0) /
+    Math.max(realClauses.length, 1)
+  );
+  const criticalCount = realClauses.filter(c => c.risk === 'critical').length;
+  const warningCount = realClauses.filter(c => c.risk === 'warning').length;
+  const safeCount = realClauses.filter(c => c.risk === 'safe').length;
+  const totalRisks = criticalCount + warningCount;
+  const agentsCompleted = agents.filter(a => a.status === 'done').length;
+
   // ── Analysis Workspace ──
   return (
     <div className="analysis-workspace">
@@ -487,8 +500,8 @@ const Analysis = () => {
         <div className="workspace-title">
           <FileText size={15} className="text-tertiary" />
           <span>{isCached ? (cachedFilename || 'Contract') : (file ? file.name : 'Vendor_Agreement_TechCorp.pdf')}</span>
-          <span className="badge badge-critical">
-            {t('analysis.risk')} {isCached ? cachedRiskScore : 72}/100
+          <span className={`badge badge-${currentRiskScore > 70 ? 'critical' : currentRiskScore > 40 ? 'warning' : 'safe'}`}>
+            {t('analysis.risk')} {currentRiskScore}/100
           </span>
         </div>
         <div className="workspace-header-actions">
@@ -515,13 +528,21 @@ const Analysis = () => {
         <div className="doc-pane">
           <div className="pane-header">
             <span className="pane-header-title">{t('analysis.document')}</span>
-            <span className="text-tertiary text-sm">{t('analysis.page')} 1 {t('analysis.of')} 12</span>
+            <span className="text-tertiary text-sm">{t('analysis.page')} {currentPage} {t('analysis.of')} {totalPages}</span>
           </div>
-          <div className="doc-viewer">
+          <div className="doc-viewer" onScroll={(e) => {
+            const target = e.currentTarget;
+            const { scrollTop, scrollHeight, clientHeight } = target;
+            const scrollPercent = scrollTop / (scrollHeight - clientHeight || 1);
+            const newPage = Math.min(totalPages, Math.max(1, Math.round(scrollPercent * (totalPages - 1)) + 1));
+            if (newPage !== currentPage) setCurrentPage(newPage);
+          }}>
             <div className="mock-doc">
-              <div className="doc-watermark">VENDOR SERVICE AGREEMENT</div>
-              <p className="doc-intro">
-                This Vendor Service Agreement ("Agreement") is entered into as of the date of the last signature by and between <strong>TechCorp Solutions Pvt. Ltd.</strong> ("Client") and the Service Provider identified below ("Provider").
+              <div className="doc-watermark">
+                {(isCached ? (cachedFilename || 'CONTRACT') : (file ? file.name : 'VENDOR SERVICE AGREEMENT')).replace(/\.[^/.]+$/, "").toUpperCase()}
+              </div>
+              <p className="doc-intro" style={{ color: 'var(--text-secondary)' }}>
+                Document <strong>{isCached ? cachedFilename : file ? file.name : 'Contract'}</strong> successfully analyzed. The following clauses were extracted and reviewed for compliance and risk.
               </p>
 
               {realClauses.map(clause => (
@@ -546,15 +567,7 @@ const Analysis = () => {
                 ) : null
               ))}
 
-              {!file && (
-                <div
-                  className="doc-clause-missing"
-                  onClick={() => { setSelectedClause(realClauses[3]); setActiveTab('risks'); }}
-                >
-                  <AlertTriangle size={14} />
-                  <span>{t('analysis.missingClause')}</span>
-                </div>
-              )}
+
             </div>
           </div>
         </div>
@@ -573,7 +586,7 @@ const Analysis = () => {
               onClick={() => { setActiveTab('risks'); setSelectedClause(null); }}
             >
               <ShieldAlert size={14} /> {t('analysis.risksRedlines')}
-              <span className="pane-tab-count">4</span>
+              {totalRisks > 0 && <span className="pane-tab-count">{totalRisks}</span>}
             </button>
             <button
               className={`pane-tab ${activeTab === 'rewrite' ? 'active' : ''}`}
@@ -590,11 +603,11 @@ const Analysis = () => {
                 <div className="trace-summary">
                   <div className="trace-summary-item">
                     <CheckCircle2 size={13} className="text-safe" />
-                    <span className="text-secondary text-sm">5 {t('analysis.agentsCompleted')}</span>
+                    <span className="text-secondary text-sm">{agentsCompleted} {t('analysis.agentsCompleted')}</span>
                   </div>
                   <div className="trace-summary-item">
                     <AlertTriangle size={13} className="text-critical" />
-                    <span className="text-secondary text-sm">3 {t('analysis.criticalIssues')}</span>
+                    <span className="text-secondary text-sm">{criticalCount} {t('analysis.criticalIssues')}</span>
                   </div>
                 </div>
 
@@ -642,16 +655,14 @@ const Analysis = () => {
               <div className="risk-overview animate-fade-up">
                 <div className="risk-summary-cards">
                   <div className="risk-summary-card risk-summary-card--critical">
-                    <AlertTriangle size={16} /> <span>2 {t('analysis.critical')}</span>
+                    <AlertTriangle size={16} /> <span>{criticalCount} {t('analysis.critical')}</span>
                   </div>
                   <div className="risk-summary-card risk-summary-card--warning">
-                    <AlertTriangle size={16} /> <span>1 {t('analysis.moderate')}</span>
+                    <AlertTriangle size={16} /> <span>{warningCount} {t('analysis.moderate')}</span>
                   </div>
-                  <div className="risk-summary-card risk-summary-card--missing">
-                    <X size={16} /> <span>1 {t('analysis.missing')}</span>
-                  </div>
+
                   <div className="risk-summary-card risk-summary-card--safe">
-                    <CheckCircle2 size={16} /> <span>1 {t('analysis.safe')}</span>
+                    <CheckCircle2 size={16} /> <span>{safeCount} {t('analysis.safe')}</span>
                   </div>
                 </div>
 
@@ -748,18 +759,7 @@ const Analysis = () => {
                     </div>
                   )}
 
-                  {/* Actions */}
-                  <div className="detail-actions">
-                    <button className="btn btn-ghost btn-sm">
-                      <RotateCcw size={13} /> {t('analysis.remix')}
-                    </button>
-                    <button className="btn btn-danger btn-sm">
-                      {t('analysis.flagForLawyer')}
-                    </button>
-                    <button className="btn btn-safe btn-sm">
-                      {t('analysis.acceptRewrite')}
-                    </button>
-                  </div>
+
                 </div>
               </div>
             )}
@@ -774,7 +774,7 @@ const Analysis = () => {
                       .replace('{rewrites}', realClauses.filter(c => c.rewrite).length.toString())
                       .replace('{highRisk}', realClauses.filter(c => c.risk === 'critical').length.toString())}
                   </p>
-                  <button className="btn btn-primary" style={{ marginTop: '20px' }}>
+                  <button className="btn btn-primary" style={{ marginTop: '20px' }} onClick={handleDownloadPdf}>
                     <Download size={14} /> {t('analysis.downloadPdf')}
                   </button>
                 </div>

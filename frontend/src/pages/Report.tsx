@@ -59,8 +59,34 @@ const Report = () => {
     
     setIsExporting(true);
     try {
-      const summary = { executive_summary: "Generated Executive Summary based on the provided clauses." };
-      const res = await generateReport(analyzedClauses, summary);
+      const criticalCount = analyzedClauses.filter((c: any) => c.risk === 'critical').length;
+      const warningCount = analyzedClauses.filter((c: any) => c.risk === 'warning').length;
+      
+      const summary = { 
+        executive_summary: `This report provides an automated AI-driven analysis of ${filename}. A total of ${analyzedClauses.length} clauses were reviewed for commercial risk, legal compliance, and one-sided terms.`,
+        overall_risk_assessment: `The document contains ${criticalCount} critical risks and ${warningCount} moderate risks. ${criticalCount > 0 ? "Immediate renegotiation is strongly recommended for the critical clauses before signing." : "The risk profile is generally acceptable, though some moderate clauses could be further optimized."}`,
+        key_recommendations: analyzedClauses
+          .filter((c: any) => c.risk === 'critical' || c.risk === 'warning')
+          .slice(0, 5)
+          .map((c: any) => `Renegotiate "${c.title}": ${c.suggestion?.en || 'Review the suggested redline in the detailed analysis.'}`)
+      };
+      const legacyPayload = analyzedClauses.map((c: any) => ({
+        clause_id: c.id,
+        text: c.text || c.original || "",
+        clause_info: { category: c.title || "Unknown" },
+        risk_info: {
+          risk_level: c.risk ? c.risk.charAt(0).toUpperCase() + c.risk.slice(1) : "Unknown",
+          risk_explanation: c.issue?.en || "No specific issue identified.",
+          unfair_one_sided_terms: []
+        },
+        compliance_info: { compliance_issues: "" },
+        negotiation_info: {
+          improved_wording: c.rewrite || c.suggestion?.en || "No change needed",
+          counter_terms: []
+        }
+      }));
+
+      const res = await generateReport(legacyPayload, summary);
       
       if (res.report_path) {
         // Build download URL

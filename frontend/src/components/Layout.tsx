@@ -145,16 +145,7 @@ const Layout = () => {
 
       {/* ── Main ── */}
       <div className="app-main">
-        {/* Topbar */}
-        <header className="app-topbar">
 
-          <div className="topbar-right">
-            <button className="btn-icon" style={{ position: 'relative' }}>
-              <Bell size={16} />
-              <span className="notif-pip" />
-            </button>
-          </div>
-        </header>
 
         {/* Content */}
         <main className="app-content">

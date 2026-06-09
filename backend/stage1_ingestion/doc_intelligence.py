@@ -46,8 +46,16 @@ def process_document(file_path: str) -> dict:
     ext = os.path.splitext(file_path)[1].lower()
     text = ""
     doc_type = "unknown"
+    page_count = 1
     
     if ext == ".pdf":
+        try:
+            doc = fitz.open(file_path)
+            page_count = len(doc)
+            doc.close()
+        except:
+            page_count = 1
+
         if is_digital_pdf(file_path):
             doc_type = "digital_pdf"
             text = extract_text_from_digital_pdf(file_path)
@@ -71,5 +79,6 @@ def process_document(file_path: str) -> dict:
         "file_path": file_path,
         "doc_type": doc_type,
         "language": language,
-        "raw_text": text
+        "raw_text": text,
+        "page_count": page_count
     }

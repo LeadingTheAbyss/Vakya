@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUp } from 'lucide-react';
 import logoImg from '../images/logo.png';
 import './Landing.css';
 import HowItWorks from '../components/HowItWorks';
@@ -50,8 +50,8 @@ const Landing = () => {
           <img src={logoImg} alt="Vakya" className="nav-logo-img" />
         </div>
         <div className="nav-links">
-          <a href="#features">Features</a>
           <a href="#how">How it works</a>
+          <a href="#features">Features</a>
         </div>
         <div className="nav-actions">
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/login')}>Log in</button>
@@ -113,9 +113,16 @@ const Landing = () => {
         <div className="footer-logo">
           <img src={logoImg} alt="Vakya" className="footer-logo-img" />
         </div>
-        <p className="text-tertiary text-sm">
+        <p className="text-tertiary text-sm" style={{ flex: 1, textAlign: 'center' }}>
           © 2026 Vakya. Not a substitute for legal advice.
         </p>
+        <button 
+          className="btn btn-primary"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          style={{ gap: '8px', padding: '10px 20px', fontSize: '14px' }}
+        >
+          Back to top <ArrowUp size={16} />
+        </button>
       </footer>
     </div>
   );

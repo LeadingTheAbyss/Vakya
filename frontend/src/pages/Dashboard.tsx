@@ -79,10 +79,7 @@ const Dashboard = () => {
         <div>
           <h2 className="dashboard-title">{t('dashboard.title')}</h2>
           <p className="text-sm text-secondary" style={{ marginTop: 4 }}>
-            {loading
-              ? t('dashboard.loading')
-              : `${contracts.length} ${contracts.length !== 1 ? t('dashboard.contracts') : t('dashboard.contract')}`
-            }
+            {loading && t('dashboard.loading')}
           </p>
         </div>
         <div className="dashboard-header-actions">
@@ -120,15 +117,7 @@ const Dashboard = () => {
             <div className="stat-card-label">{t('dashboard.moderateRiskCard')}</div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-card-icon" style={{ background: 'var(--risk-safe-bg)', color: 'var(--risk-safe)', border: '1px solid var(--risk-safe-border)' }}>
-            <ShieldCheck size={16} />
-          </div>
-          <div>
-            <div className="stat-card-value">{loading ? '–' : safeCount}</div>
-            <div className="stat-card-label">{t('dashboard.clearedCard')}</div>
-          </div>
-        </div>
+
         <div className="stat-card">
           <div className="stat-card-icon" style={{ background: 'var(--ai-glow)', color: 'var(--ai-secondary)', border: '1px solid rgba(99,102,241,0.25)' }}>
             <FilePlus size={16} />
