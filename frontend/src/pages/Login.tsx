@@ -26,7 +26,7 @@ const Login = () => {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const userInfo = await res.json();
-        
+
         login({
           id: `google_${userInfo.sub}`,
           name: userInfo.name || 'User',
@@ -93,7 +93,7 @@ const Login = () => {
             <span className="login-headline-accent">Understand every clause.</span>
           </h1>
           <p className="login-subline">
-            Vakya analyses your contracts in minutes and flags risks before you sign — built specifically for Indian MSMEs.
+            Vakya analyses your contracts in minutes and flags risks before you sign built specifically for Indian MSMEs.
           </p>
 
           <ul className="login-features">
@@ -106,9 +106,6 @@ const Login = () => {
           </ul>
         </div>
 
-        <p className="login-footer-note">
-          Trusted by 500+ MSMEs across India
-        </p>
       </div>
 
       {/* Right panel — form */}

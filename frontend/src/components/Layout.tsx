@@ -31,7 +31,6 @@ const Layout = () => {
   const navItems = [
     { path: '/app', label: t('nav.upload'), icon: <UploadCloud size={16} />, end: true },
     { path: '/app/repository', label: t('nav.repository'), icon: <LayoutGrid size={16} /> },
-    { path: '/app/templates', label: t('nav.templates'), icon: <FileQuestion size={16} /> },
     { path: '/app/settings', label: t('nav.settings'), icon: <Settings size={16} /> },
   ];
 

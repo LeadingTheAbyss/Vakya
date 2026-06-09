@@ -6,7 +6,7 @@ import {
   RotateCcw, X, Layers, GitBranch, FileText, ExternalLink, Loader2, Download, Clock
 } from 'lucide-react';
 import './Analysis.css';
-import { uploadDocument, analyzeDocument, saveContract, fetchContractDetail } from '../api/client';
+import { uploadDocument, analyzeDocument, saveContract, fetchContractDetail, fetchConfig } from '../api/client';
 import { useApp } from '../context/AppContext';
 import ContractChat from '../components/ContractChat';
 
@@ -178,34 +178,68 @@ const Analysis = () => {
   const [realClauses, setRealClauses] = useState<Clause[]>(clausesData);
   const [cachedFilename, setCachedFilename] = useState<string | null>(null);
   const [cachedRiskScore, setCachedRiskScore] = useState<number>(0);
-  const [estimatedSeconds, setEstimatedSeconds] = useState(() => {
-    if (!file) return 50;
-    const sizeMB = file.size / (1024 * 1024);
-    
-    // AI Pipeline takes heavy base time (LLM chaining, OCR, segmentation)
-    let baseTime = 40;
-    if (file.type && file.type.startsWith('image/')) {
-      baseTime += 15; // Extra overhead for Image OCR
-    } else if (file.type === 'application/pdf') {
-      baseTime += 5; // Extra overhead for PDF parsing
-    }
+  const [estimatedSeconds, setEstimatedSeconds] = useState(50);
 
-    // Hardware heuristic: assuming backend runs locally, read local system specs
-    const cores = navigator.hardwareConcurrency || 4;
-    const memory = (navigator as any).deviceMemory || 8; // GB of RAM
-    
-    // Adjust timing: faster machines (more cores + ram) take less time.
-    // e.g., 8 cores -> 0.5x time. 16GB RAM -> 0.5x time.
-    const cpuFactor = Math.max(0.4, 4 / cores);
-    const ramFactor = Math.max(0.5, 8 / memory);
-    const hardwareFactor = cpuFactor * ramFactor;
+  useEffect(() => {
+    if (!file) return;
 
-    // ~45s per MB + base time, multiplied by how powerful the machine is
-    const finalEstimate = Math.round((sizeMB * 45 + baseTime) * hardwareFactor);
-    
-    // Clamp between 15s and 5 minutes
-    return Math.max(15, Math.min(300, finalEstimate));
-  });
+    let isMounted = true;
+
+    const calculateEstimate = (model: string) => {
+      const sizeMB = file.size / (1024 * 1024);
+      
+      // AI Pipeline takes heavy base time (LLM chaining, OCR, segmentation)
+      let baseTime = 40;
+      if (file.type && file.type.startsWith('image/')) {
+        baseTime += 15; // Extra overhead for Image OCR
+      } else if (file.type === 'application/pdf') {
+        baseTime += 5; // Extra overhead for PDF parsing
+      }
+
+      // Hardware heuristic: assuming backend runs locally, read local system specs
+      const cores = navigator.hardwareConcurrency || 4;
+      const memory = (navigator as any).deviceMemory || 8; // GB of RAM
+      
+      // Adjust timing: faster machines (more cores + ram) take less time.
+      const cpuFactor = Math.max(0.4, 4 / cores);
+      const ramFactor = Math.max(0.5, 8 / memory);
+      const hardwareFactor = cpuFactor * ramFactor;
+
+      // Adjust timing based on the LLM model
+      let modelFactor = 1.0;
+      const lowerModel = model.toLowerCase();
+      if (lowerModel.includes('qwen3')) {
+        modelFactor = 1.5;
+      } else if (lowerModel.includes('llama3') || lowerModel.includes('llama')) {
+        modelFactor = 1.2;
+      } else if (lowerModel.includes('gemini') || lowerModel.includes('pro') || lowerModel.includes('gpt')) {
+        modelFactor = 0.8; // Faster API models
+      } else if (lowerModel.includes('32b') || lowerModel.includes('70b') || lowerModel.includes('72b')) {
+        modelFactor = 3.0; // Very large local models
+      } else if (lowerModel.includes('8b') || lowerModel.includes('7b')) {
+        modelFactor = 1.2;
+      }
+
+      // ~45s per MB + base time, multiplied by how powerful the machine is and the model
+      const finalEstimate = Math.round((sizeMB * 45 + baseTime) * hardwareFactor * modelFactor);
+      
+      // Clamp between 15s and 10 minutes
+      return Math.max(15, Math.min(600, finalEstimate));
+    };
+
+    // Set initial estimate using a default unknown model
+    setEstimatedSeconds(calculateEstimate('Unknown'));
+
+    // Fetch the actual model being used from the backend configuration
+    fetchConfig()
+      .then(config => {
+        if (!isMounted) return;
+        setEstimatedSeconds(calculateEstimate(config.ollama_model || 'Unknown'));
+      })
+      .catch(console.error);
+
+    return () => { isMounted = false; };
+  }, [file]);
 
   useEffect(() => {
     if (isLoaded) return;

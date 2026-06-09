@@ -199,33 +199,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* About */}
-        <section className="settings-section">
-          <div className="settings-section-header">
-            <Info size={16} className="settings-icon" />
-            <div>
-              <h2>{t('settings.about')}</h2>
-              <p>{t('settings.about.desc')}</p>
-            </div>
-          </div>
-          <div className="settings-section-body">
-            <div className="settings-about-row">
-              <span className="settings-about-label">{t('settings.version')}</span>
-              <span className="settings-about-value">v1.0.0-beta</span>
-            </div>
-            <div className="settings-about-row">
-              <span className="settings-about-label">{t('settings.build')}</span>
-              <span className="settings-about-value">2026.06.07</span>
-            </div>
-            <div className="settings-about-row">
-              <span className="settings-about-label">{t('settings.llmModel')}</span>
-              <span className="settings-about-value">{llmModel} (local)</span>
-            </div>
-            <button id="view-changelog-btn" className="settings-changelog-btn">
-              {t('settings.changelog')} <ExternalLink size={12} />
-            </button>
-          </div>
-        </section>
+
       </div>
 
       <div className="settings-footer">
