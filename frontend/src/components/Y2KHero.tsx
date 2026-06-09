@@ -16,19 +16,19 @@ const Y2KHero = () => {
   const belowRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
 
-  // ── HOVER: shuffle chars up → in from below ─────────────────
+  
   const handleBelowEnter = useCallback(() => {
     const chars = belowRef.current?.querySelectorAll('.bt-char');
     const lines = belowRef.current?.querySelectorAll('.bt-line');
     if (!chars || chars.length === 0) return;
 
-    // Activate underlines on all lines
+    
     lines?.forEach(l => l.classList.add('underline-active'));
 
     if (isAnimating.current) return;
     isAnimating.current = true;
 
-    // Phase 1: fly up + fade out
+    
     gsap.to(chars, {
       yPercent: -110,
       opacity: 0,
@@ -36,7 +36,7 @@ const Y2KHero = () => {
       stagger: { each: 0.018, from: 'start' },
       ease: 'power2.in',
       onComplete: () => {
-        // Phase 2: reset below, fly back in
+        
         gsap.fromTo(chars,
           { yPercent: 110, opacity: 0 },
           {
@@ -62,7 +62,7 @@ const Y2KHero = () => {
     const ringEl = cursorRingRef.current;
     const wrapperEl = container.current;
 
-    // ── CURSOR ────────────────────────────────────────────────
+    
     let mx = 0, my = 0, rx = 0, ry = 0;
     let cursorVisible = false;
 
@@ -93,7 +93,7 @@ const Y2KHero = () => {
       if (ringEl) gsap.set(ringEl, { x: rx, y: ry });
     });
 
-    // ── ENTRANCE ──────────────────────────────────────────────
+    
     const ctx = gsap.context(() => {
       const rowA = document.getElementById('rowA');
       gsap.set([rowA], { yPercent: 105 });
@@ -103,7 +103,7 @@ const Y2KHero = () => {
         .to(rowA, { yPercent: 0, duration: 0.9, ease: 'power3.out' })
         .to('.y2k-bracket', { opacity: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, '-=0.4');
 
-      // ── SCROLL ZOOM ─────────────────────────────────────────
+      
       gsap.timeline({
         scrollTrigger: { trigger: '#y2k-wrapper', start: 'top top', end: '+=180%', pin: true, scrub: true }
       })
@@ -113,7 +113,7 @@ const Y2KHero = () => {
         .fromTo('#bgPlasma', { opacity: 1 }, { opacity: 0, duration: 0.7, ease: 'power2.in' }, 0.3)
         .fromTo('.y2k-scanlines', { opacity: 0.6 }, { opacity: 1.5, duration: 1, ease: 'none' }, 0);
 
-      // ── SCROLL REVEAL chars ──────────────────────────────────
+      
       gsap.from('.bt-char', {
         scrollTrigger: {
           trigger: '.section-below',
@@ -139,11 +139,11 @@ const Y2KHero = () => {
 
   return (
     <div className="y2k-hero-wrapper" ref={container}>
-      {/* ── CURSOR ── */}
+      
       <div className="y2k-cursor" ref={cursorRef}></div>
       <div className="y2k-cursor-ring" ref={cursorRingRef}></div>
 
-      {/* ── PINNED HERO ── */}
+      
       <div className="y2k-wrapper" id="y2k-wrapper">
         <div className="bg-plasma" id="bgPlasma"></div>
         <div className="image-container" id="imgContainer">
@@ -163,7 +163,7 @@ const Y2KHero = () => {
         </div>
       </div>
 
-      {/* ── BELOW SECTION — hover wired via React ── */}
+      
       <div className="section-below">
         <div className="bg-plasma" style={{opacity:0.12}}></div>
         <div
@@ -173,7 +173,7 @@ const Y2KHero = () => {
           onMouseEnter={handleBelowEnter}
           onMouseLeave={handleBelowLeave}
         >
-          {/* Line 1 */}
+          
           <div className="bt-line">
             <div className="bt-underline"></div>
             <div className="bt-chars-wrap">
@@ -185,7 +185,7 @@ const Y2KHero = () => {
             </div>
           </div>
 
-          {/* Line 2 */}
+          
           <div className="bt-line">
             <div className="bt-underline"></div>
             <div className="bt-chars-wrap">

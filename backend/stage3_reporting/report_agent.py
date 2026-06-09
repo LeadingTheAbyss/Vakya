@@ -14,7 +14,7 @@ class ExecutiveSummary(BaseModel):
 def generate_report_summary(analyzed_clauses: list[dict]) -> dict:
     llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2, num_ctx=2048)
     
-    # We only want to send a simplified version of the analysis to the LLM to save context window
+    
     simplified_analysis = []
     for ac in analyzed_clauses:
         clause_summary = ac.get('clause_info', {}).get('summary', '')
@@ -22,7 +22,7 @@ def generate_report_summary(analyzed_clauses: list[dict]) -> dict:
         unfair_terms = ac.get('risk_info', {}).get('unfair_one_sided_terms', [])
         compliance_issues = ac.get('compliance_info', {}).get('compliance_issues', '')
         
-        # Only include high/medium risks or compliance issues to keep prompt short
+        
         if risk_level in ["High", "Medium", "Flagged"] or compliance_issues:
             simplified_analysis.append({
                 "clause_id": ac.get("clause_id"),
@@ -32,7 +32,7 @@ def generate_report_summary(analyzed_clauses: list[dict]) -> dict:
                 "compliance_issues": compliance_issues
             })
             
-    # If no major issues, just send a basic summary
+    
     if not simplified_analysis:
          simplified_analysis = "No high or medium risks found. The contract appears standard."
          

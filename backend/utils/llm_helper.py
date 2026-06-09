@@ -13,8 +13,8 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
     Custom invoker that handles reasoning models like DeepSeek-R1 by
     stripping <think> tags and manually parsing the JSON output.
     """
-    # Append the strict JSON requirement and schema to the system prompt
-    # Simplify schema to prevent 1B models from hallucinating "properties" or "title" wrappers
+    
+    
     schema_json = schema_cls.model_json_schema()
     simplified_schema = {}
     for k, v in schema_json.get("properties", {}).items():
@@ -33,11 +33,11 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
     if isinstance(messages[0], tuple) and messages[0][0] == "system":
         messages[0] = ("system", messages[0][1] + instruction)
     else:
-        # If no system prompt, add one at the beginning
+        
         messages.insert(0, ("system", instruction))
         
     try:
-        # We strictly bind format="json" to enforce valid JSON generation at the API level
+        
         if hasattr(llm, "bind"):
             response = llm.bind(format="json").invoke(messages)
         else:
@@ -45,10 +45,10 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
             
         content = response.content
         
-        # 1. Strip <think> tags completely
+        
         content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL)
         
-        # 2. Find the first '{' and last '}' to extract pure JSON
+        
         start_idx = content.find('{')
         end_idx = content.rfind('}')
         
@@ -63,40 +63,40 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
         try:
             data = parser.parse(json_str)
         except Exception as e_parse:
-            # Fallback heuristic parser for Markdown output (e.g. **Category:** Value)
+            
             fallback_data = {}
             for k, v in schema_cls.model_fields.items():
-                # Matches **Key:** or **Key Name:** or Key:
+                
                 pattern = r'(?:\*\*)?(?:' + k + r'|' + k.replace('_', ' ').title() + r')(?:\*\*)?\s*:\s*(.*?)(?=(?:\*\*)?[A-Z][a-zA-Z\s_]+(?:\*\*)?\s*:|$)'
                 match = re.search(pattern, content, re.IGNORECASE | re.DOTALL)
                 if match:
                     val = match.group(1).strip()
                     ann_str = str(v.annotation).lower()
                     if 'list' in ann_str:
-                        # Convert bullet points or numbered lists to list
+                        
                         val = [item.strip('- 1234567890.') for item in val.split('\n') if item.strip()]
                     fallback_data[k] = val
                 else:
                     ann_str = str(v.annotation).lower()
                     fallback_data[k] = [] if 'list' in ann_str else ""
             
-            # If we managed to extract at least one value successfully, use the fallback data
+            
             if any(fallback_data.values()):
                 data = fallback_data
             else:
                 raise e_parse
         
         if isinstance(data, dict):
-            # Unwrap if model hallucinated a "properties" wrapper
+            
             if "properties" in data and isinstance(data["properties"], dict):
                 data = data["properties"]
                 
-            # Flatten lists/dicts to strings if schema expects a string
+            
             for field_name, field_info in schema_cls.model_fields.items():
                 if field_name in data:
                     val = data[field_name]
                     ann = field_info.annotation
-                    # If field expects string but got list/dict, convert it
+                    
                     if ann is str and not isinstance(val, str):
                         if isinstance(val, dict) and "description" in val:
                             data[field_name] = str(val["description"])
@@ -104,12 +104,12 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
                             data[field_name] = ", ".join(map(str, val))
                         else:
                             data[field_name] = str(val)
-                    # If field expects list[str] but items are dicts, flatten each item
+                    
                     elif isinstance(val, list):
                         flattened = []
                         for item in val:
                             if isinstance(item, dict):
-                                # Extract most meaningful string value from the dict
+                                
                                 flattened.append(
                                     item.get("value") or item.get("description") or
                                     item.get("term") or item.get("text") or str(item)
@@ -126,7 +126,7 @@ def invoke_structured(llm, schema_cls: Type[T], messages: list) -> T:
         with open("llm_error.log", "a", encoding="utf-8") as f:
             f.write(error_msg + "\n" + "-"*40 + "\n")
             
-        # Absolute failsafe: return default data instead of crashing
+        
         default_data = {}
         for k, v in schema_cls.model_fields.items():
             ann_str = str(v.annotation).lower()

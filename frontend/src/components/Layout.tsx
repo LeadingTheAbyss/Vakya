@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutGrid, FileQuestion, Settings, Bell, Search,
-  ChevronUp, UploadCloud, User, LogOut, LogIn, UserPlus
+  ChevronUp, UploadCloud, User, LogOut, LogIn, UserPlus, ShieldAlert
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import logoImg from '../images/logo.png';
@@ -14,7 +14,7 @@ const Layout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu on outside click
+  
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -36,10 +36,10 @@ const Layout = () => {
 
   return (
     <div className="app-shell">
-      {/* ── Sidebar ── */}
+      
       <aside className="sidebar">
         <div className="sidebar-top">
-          <button className="sidebar-brand" onClick={() => navigate('/')}>
+          <button className="sidebar-brand logo-card" onClick={() => navigate('/')}>
             <img src={logoImg} alt="Vakya" className="sidebar-logo-img" />
           </button>
 
@@ -58,11 +58,11 @@ const Layout = () => {
           </nav>
         </div>
 
-        {/* ── Sidebar Bottom: User ── */}
+        
         <div className="sidebar-bottom" ref={menuRef}>
           {isLoggedIn && user ? (
             <>
-              {/* Profile popup menu */}
+              
               {menuOpen && (
                 <div className="user-popup" role="menu">
                   <div className="user-popup-header">
@@ -143,11 +143,11 @@ const Layout = () => {
         </div>
       </aside>
 
-      {/* ── Main ── */}
+      
       <div className="app-main">
 
 
-        {/* Content */}
+        
         <main className="app-content">
           <Outlet />
         </main>

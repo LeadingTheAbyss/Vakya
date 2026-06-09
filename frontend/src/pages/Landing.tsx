@@ -44,7 +44,7 @@ const Landing = () => {
 
   return (
     <div className="landing">
-      {/* ── Nav ── */}
+      
       <nav className="landing-nav">
         <div className="nav-logo">
           <img src={logoImg} alt="Vakya" className="nav-logo-img" />
@@ -61,13 +61,13 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* ── Y2K Hero Section ── */}
+      
       <Y2KHero />
 
-      {/* ── How It Works ── */}
+      
       <HowItWorks />
 
-      {/* ── Stats ── */}
+      
       <section className="stats-section">
         {stats.map(s => (
           <div key={s.label} className="stat-item">
@@ -77,7 +77,7 @@ const Landing = () => {
         ))}
       </section>
 
-      {/* ── Features ── */}
+      
       <section className="features-section" id="features">
         <div className="section-header">
           <div className="section-tag">Capabilities</div>
@@ -94,7 +94,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── CTA Banner ── */}
+      
       <section className="cta-banner">
         <div className="cta-banner-glow" />
         <h2>Stop signing contracts blind.</h2>
@@ -108,7 +108,7 @@ const Landing = () => {
         </button>
       </section>
 
-      {/* ── Footer ── */}
+      
       <footer className="landing-footer">
         <div className="footer-logo">
           <img src={logoImg} alt="Vakya" className="footer-logo-img" />

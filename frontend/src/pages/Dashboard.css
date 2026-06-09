@@ -20,7 +20,7 @@
 
 .dashboard-header-actions { display: flex; gap: 8px; }
 
-/* ── Stat Row ── */
+
 .stat-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -69,7 +69,7 @@
   flex-shrink: 0;
 }
 
-/* ── Contracts Table ── */
+
 .contracts-table-wrapper {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -166,7 +166,7 @@
   text-align: right;
 }
 
-/* ── Upload Drop Zone ── */
+
 .upload-drop-zone {
   display: flex;
   flex-direction: column;

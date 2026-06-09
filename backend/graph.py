@@ -27,12 +27,12 @@ BATCH_SIZE = 1
 def process_single_clause(args):
     idx, clause = args
     
-    # Run agents sequentially passing context
+    
     c_info = analyze_clause(clause["text"])
     comp_info = check_compliance(clause["text"], c_info.get("category", "Unknown"))
     r_info = assess_risk(clause["text"], comp_info.get("status", "Unknown"))
     
-    # Conditional negotiation based on risk and unfair terms
+    
     neg_info = {}
     if r_info.get("risk_level") in ["High", "Medium", "Flagged"] or len(r_info.get("unfair_one_sided_terms", [])) > 0:
         neg_info = suggest_negotiation(clause["text"], r_info.get("risk_level", "Unknown"), r_info.get("unfair_one_sided_terms", []))
@@ -56,7 +56,7 @@ def clause_batch_node(state: ContractState):
     batch = state["clauses"][start:end]
     
     results = []
-    # Process up to BATCH_SIZE clauses concurrently
+    
     with concurrent.futures.ThreadPoolExecutor(max_workers=BATCH_SIZE) as executor:
         futures = [executor.submit(process_single_clause, (start + i, c)) for i, c in enumerate(batch)]
         for future in concurrent.futures.as_completed(futures):
@@ -72,7 +72,7 @@ def should_continue(state: ContractState):
         return "clause_batch_node"
     return END
 
-# Build Graph
+
 builder = StateGraph(ContractState)
 
 builder.add_node("clause_batch_node", clause_batch_node)

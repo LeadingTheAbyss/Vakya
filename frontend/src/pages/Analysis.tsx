@@ -10,7 +10,7 @@ import { uploadDocument, analyzeDocument, saveContract, fetchContractDetail, fet
 import { useApp } from '../context/AppContext';
 import ContractChat from '../components/ContractChat';
 
-// ── Types ──────────────────────────────────────────────────────────────────────
+
 interface AgentStep {
   id: number;
   name: string;
@@ -32,7 +32,7 @@ interface Clause {
   suggestion: { en: string; hi: string };
 }
 
-// ── Mock Data ──────────────────────────────────────────────────────────────────
+
 const agentStepsData: AgentStep[] = [
   {
     id: 1, name: 'Doc Ingestion', desc: 'Parsing document and running OCR...',
@@ -156,7 +156,7 @@ const clausesData: Clause[] = [
   },
 ];
 
-// ── Analysis Component ─────────────────────────────────────────────────────────
+
 const Analysis = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -164,7 +164,7 @@ const Analysis = () => {
   const { user, t, language, setLanguage } = useApp();
   const file = location.state?.file as File | undefined;
 
-  // A UUID id with no file = open a cached contract from DB
+  
   const isCached = !!id && id !== 'new' && !file;
 
   const [, setLoadingStep] = useState(0);
@@ -183,11 +183,11 @@ const Analysis = () => {
 
 
 
-  // ── Load cached contract OR run pipeline ──────────────────────────────────────
+  
   useEffect(() => {
     if (isLoaded) return;
 
-    // ── Case 1: Existing contract from DB (no file in state, id is a UUID) ──
+    
     if (isCached && id) {
       fetchContractDetail(id)
         .then(({ contract }) => {
@@ -216,13 +216,13 @@ const Analysis = () => {
           setIsLoaded(true);
         })
         .catch(() => {
-          // Fallback: show mock data
+          
           setIsLoaded(true);
         });
       return;
     }
 
-    // ── Case 2: Demo view (no file, id = 'new' or non-UUID) ──
+    
     if (!file) {
       const interval = setInterval(() => {
         setLoadingStep(prev => {
@@ -247,12 +247,12 @@ const Analysis = () => {
       return () => clearInterval(interval);
     }
 
-    // ── Case 3: Real new analysis ──
+    
     const runAnalysis = async () => {
       try {
         setAgents(current => current.map((a, i) => i === 0 ? { ...a, status: 'active' } : a));
         
-        // 1. Upload
+        
         const uploadRes = await uploadDocument(file);
         const { clauses, document_info } = uploadRes;
         
@@ -279,11 +279,11 @@ const Analysis = () => {
           i === 3 ? { ...a, status: 'active' } : a
         ));
 
-        // 2. Analyze
+        
         const analyzeRes = await analyzeDocument(clauses);
         const { analyzed_clauses } = analyzeRes;
         
-        // Map backend output to Clause[]
+        
         const mappedClauses: Clause[] = analyzed_clauses.map((c: any, index: number) => {
           const clauseInfo = c.clause_info || {};
           const riskInfo = c.risk_info || {};
@@ -348,7 +348,7 @@ const Analysis = () => {
           i === 4 ? { ...a, status: 'done', desc: `Generated ${rewritesCount} safe rewrites`, thoughts: ['Generated safe rewrites'] } : a
         ));
 
-        // 3. Save to DB if user is logged in
+        
         if (user?.id) {
           const criticals = mappedClauses.filter(c => c.risk === 'critical').length;
           const riskScore = Math.round(
@@ -439,7 +439,7 @@ const Analysis = () => {
     }, 250);
   };
 
-  // ── Loading Screen ──
+  
   if (!isLoaded) {
     return (
       <div className="loading-screen">
@@ -478,7 +478,7 @@ const Analysis = () => {
     );
   }
 
-  // ── Computed Stats ──
+  
   const currentRiskScore = isCached ? cachedRiskScore : Math.round(
     realClauses.reduce((acc, c) => acc + (c.risk === 'critical' ? 80 : c.risk === 'warning' ? 50 : 15), 0) /
     Math.max(realClauses.length, 1)
@@ -489,10 +489,10 @@ const Analysis = () => {
   const totalRisks = criticalCount + warningCount;
   const agentsCompleted = agents.filter(a => a.status === 'done').length;
 
-  // ── Analysis Workspace ──
+  
   return (
     <div className="analysis-workspace">
-      {/* ── Workspace Header ── */}
+      
       <div className="workspace-header">
         <button className="btn-back" onClick={() => navigate('/app/repository')}>
           <ArrowLeft size={15} /> {t('analysis.repository')}
@@ -522,9 +522,9 @@ const Analysis = () => {
         </div>
       </div>
 
-      {/* ── Split Pane ── */}
+      
       <div className="split-pane">
-        {/* ── Left: Document Viewer ── */}
+        
         <div className="doc-pane">
           <div className="pane-header">
             <span className="pane-header-title">{t('analysis.document')}</span>
@@ -572,7 +572,7 @@ const Analysis = () => {
           </div>
         </div>
 
-        {/* ── Right: Intelligence Pane ── */}
+        
         <div className="intelligence-pane">
           <div className="pane-tabs">
             <button
@@ -597,7 +597,7 @@ const Analysis = () => {
           </div>
 
           <div className="pane-body">
-            {/* ── Tab 1: Agent Trace ── */}
+            
             {activeTab === 'trace' && (
               <div className="agent-trace animate-fade-up">
                 <div className="trace-summary">
@@ -650,7 +650,7 @@ const Analysis = () => {
               </div>
             )}
 
-            {/* ── Tab 2: Risk & Redlines ── */}
+            
             {activeTab === 'risks' && !selectedClause && (
               <div className="risk-overview animate-fade-up">
                 <div className="risk-summary-cards">
@@ -697,7 +697,7 @@ const Analysis = () => {
               </div>
             )}
 
-            {/* ── Clause Detail Panel ── */}
+            
             {activeTab === 'risks' && selectedClause && (
               <div className="clause-detail animate-fade-up">
                 <div className="clause-detail-header">
@@ -715,7 +715,7 @@ const Analysis = () => {
                 <div className="clause-detail-body">
                   <h4 className="clause-detail-title">{selectedClause.title}</h4>
 
-                  {/* Original Clause */}
+                  
                   {selectedClause.text && (
                     <div className="detail-section">
                       <div className="detail-label">{t('analysis.originalText')}</div>
@@ -725,7 +725,7 @@ const Analysis = () => {
                     </div>
                   )}
 
-                  {/* Risk Explanation */}
+                  
                   <div className={`detail-risk-box detail-risk-box--${selectedClause.risk}`}>
                     <div className="detail-risk-header">
                       <AlertTriangle size={14} />
@@ -736,7 +736,7 @@ const Analysis = () => {
                     </p>
                   </div>
 
-                  {/* Suggestion */}
+                  
                   <div className="detail-section">
                     <div className="detail-label">{t('analysis.recommendedAction')}</div>
                     <p className={`detail-suggestion ${language === 'hi' ? 'lang-hi' : ''}`}>
@@ -744,7 +744,7 @@ const Analysis = () => {
                     </p>
                   </div>
 
-                  {/* Rewrite */}
+                  
                   {selectedClause.rewrite && (
                     <div className="detail-section">
                       <div className="detail-label-row">
@@ -764,7 +764,7 @@ const Analysis = () => {
               </div>
             )}
 
-            {/* ── Tab 3: Full MSME Draft ── */}
+            
             {activeTab === 'rewrite' && (
               <div className="rewrite-pane animate-fade-up" style={{ padding: '24px' }}>
                 <div className="rewrite-header" style={{ marginBottom: '32px' }}>

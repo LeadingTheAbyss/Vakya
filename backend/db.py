@@ -8,7 +8,7 @@ import uuid
 from contextlib import contextmanager
 from dotenv import load_dotenv
 
-# Load .env from project root (one level above backend/)
+
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 import psycopg2
@@ -33,7 +33,7 @@ def get_conn():
     p = get_pool()
     conn = p.getconn()
     
-    # Ping the connection; if dead, discard and get a new one
+    
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT 1")
@@ -48,7 +48,7 @@ def get_conn():
         try:
             conn.rollback()
         except Exception:
-            pass  # Ignore rollback errors if connection is broken
+            pass  
         raise
     finally:
         try:
@@ -58,7 +58,7 @@ def get_conn():
         p.putconn(conn, close=close_it)
 
 
-# ── Schema ──────────────────────────────────────────────────────────────────────
+
 
 def init_db():
     """Create tables if they don't exist. Called on FastAPI startup."""
@@ -99,7 +99,7 @@ def init_db():
     print("[db] Tables initialised")
 
 
-# ── Users ────────────────────────────────────────────────────────────────────────
+
 
 def upsert_user(user_id: str, email: str, name: str, photo: str | None = None, plan: str = "free") -> dict:
     """Insert or update a user row. Returns the full user row."""
@@ -146,7 +146,7 @@ def update_user_profile(user_id: str, name: str | None, phone: str | None,
             return dict(row) if row else None
 
 
-# ── Contracts ────────────────────────────────────────────────────────────────────
+
 
 def save_contract(user_id: str, filename: str, risk_score: int, risk_level: str,
                   clauses: list, summary: dict, status: str = "review") -> str:

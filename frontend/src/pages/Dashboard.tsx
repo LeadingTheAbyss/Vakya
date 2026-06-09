@@ -8,7 +8,7 @@ import { useApp } from '../context/AppContext';
 import { fetchContracts } from '../api/client';
 import './Dashboard.css';
 
-// ── Types ────────────────────────────────────────────────────────────────────────
+
 interface DBContract {
   id: string;
   user_id: string;
@@ -43,7 +43,7 @@ const statusBadge: Record<string, { label: string; cls: string }> = {
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-// ── Component ────────────────────────────────────────────────────────────────────
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, t, language } = useApp();
@@ -66,7 +66,7 @@ const Dashboard = () => {
     }
   };
 
-  // ── Computed stats ────────────────────────────────────────────────────────────
+  
   const criticalCount  = contracts.filter(c => riskLevelMap(c.risk_level) === 'critical').length;
   const warningCount   = contracts.filter(c => riskLevelMap(c.risk_level) === 'warning').length;
   const safeCount      = contracts.filter(c => riskLevelMap(c.risk_level) === 'safe').length;
@@ -74,7 +74,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      {/* ── Header ── */}
+      
       <div className="dashboard-header">
         <div>
           <h2 className="dashboard-title">{t('dashboard.title')}</h2>
@@ -96,7 +96,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ── Stat Cards ── */}
+      
       <div className="stat-row">
         <div className="stat-card">
           <div className="stat-card-icon" style={{ background: 'var(--risk-critical-bg)', color: 'var(--risk-critical)', border: '1px solid var(--risk-critical-border)' }}>
@@ -129,7 +129,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ── Table ── */}
+      
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '64px', gap: '12px', color: 'var(--text-secondary)' }}>
           <Loader2 size={20} className="animate-spin" />
@@ -224,7 +224,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── Upload Drop Zone ── */}
+      
       <label className="upload-drop-zone">
         <input type="file" hidden accept=".pdf,.doc,.docx,image/*" onChange={handleFileChange} />
         <UploadCloud size={20} className="upload-zone-icon" />

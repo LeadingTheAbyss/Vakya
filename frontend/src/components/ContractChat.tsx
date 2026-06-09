@@ -32,12 +32,12 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Scroll to bottom when new messages arrive
+  
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Focus input when opened
+  
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
@@ -46,7 +46,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
     setIsOpen(true);
     if (!hasOpened) {
       setHasOpened(true);
-      // Add a greeting message
+      
       setMessages([{
         role: 'assistant',
         content: language === 'hi'
@@ -89,7 +89,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
     }
   };
 
-  // Render simple markdown-ish bold
+  
   const renderContent = (text: string) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, i) =>
@@ -101,7 +101,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
 
   return (
     <div className="contract-chat-root">
-      {/* Floating toggle button */}
+      
       {!isOpen && (
         <button
           className="chat-fab"
@@ -114,10 +114,10 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
         </button>
       )}
 
-      {/* Chat panel */}
+      
       {isOpen && (
         <div className="chat-panel animate-slide-up">
-          {/* Header */}
+          
           <div className="chat-header">
             <div className="chat-header-info">
               <div className="chat-header-icon">
@@ -132,7 +132,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
             </button>
           </div>
 
-          {/* Messages */}
+          
           <div className="chat-messages">
             {messages.map((msg, i) => (
               <div key={i} className={`chat-msg chat-msg--${msg.role}`}>
@@ -158,7 +158,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
               </div>
             )}
 
-            {/* Suggestions (only shown when no user messages yet) */}
+            
             {messages.length === 1 && !isLoading && (
               <div className="chat-suggestions">
                 {SUGGESTIONS.map((s, i) => (
@@ -176,7 +176,7 @@ const ContractChat = ({ clauses, filename }: ContractChatProps) => {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
+          
           <div className="chat-input-row">
             <input
               ref={inputRef}

@@ -21,7 +21,7 @@ const Login = () => {
     onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
-        // Fetch user info from Google using the access token
+        
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
@@ -58,7 +58,7 @@ const Login = () => {
     if (isSignUp && !name) { setError('Please enter your name.'); return; }
     setIsLoading(true);
 
-    // Simulate auth — plug in real backend call here
+    
     setTimeout(() => {
       login({
         id: 'email_' + Date.now(),
@@ -80,7 +80,7 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      {/* Left panel */}
+      
       <div className="login-left">
         <div className="login-brand" onClick={() => navigate('/')}>
           <img src={logoImg} alt="Vakya" className="login-brand-logo" />
@@ -108,7 +108,7 @@ const Login = () => {
 
       </div>
 
-      {/* Right panel — form */}
+      
       <div className="login-right">
         <div className="login-card">
           <div className="login-card-header">
@@ -120,7 +120,7 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Google Button */}
+          
           <button
             className="google-btn"
             onClick={handleGoogleLogin}
@@ -137,14 +137,14 @@ const Login = () => {
             {isLoading ? 'Signing in...' : 'Continue with Google'}
           </button>
 
-          {/* Divider */}
+          
           <div className="login-divider">
             <span className="login-divider-line" />
             <span className="login-divider-text">or</span>
             <span className="login-divider-line" />
           </div>
 
-          {/* Email Form */}
+          
           <form className="login-form" onSubmit={handleEmailSubmit}>
             {isSignUp && (
               <div className="login-field">
@@ -220,7 +220,7 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Switch mode */}
+          
           <p className="login-switch">
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button

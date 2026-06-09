@@ -89,10 +89,10 @@ const Report = () => {
       const res = await generateReport(legacyPayload, summary);
       
       if (res.report_path) {
-        // Build download URL
+        
         const downloadUrl = `${API_BASE_URL}/report/download?path=${encodeURIComponent(res.report_path)}`;
         
-        // Trigger download
+        
         const a = document.createElement('a');
         a.href = downloadUrl;
         a.download = 'Analysis_Report.docx';
@@ -109,7 +109,7 @@ const Report = () => {
 
   return (
     <div className="report-page">
-      {/* ── Header ── */}
+      
       <div className="report-header">
         <button className="btn-back" onClick={() => navigate(`/app/analysis/${id}`)}>
           <ArrowLeft size={15} /> {t('report.back')}
@@ -125,7 +125,7 @@ const Report = () => {
       </div>
 
       <div className="report-body">
-        {/* ── Title Block ── */}
+        
         <div className="report-title-block">
           <div className="report-brand">
             <ShieldAlert size={20} className="text-ai" />
@@ -140,7 +140,7 @@ const Report = () => {
           </div>
         </div>
 
-        {/* ── Executive Summary ── */}
+        
         <section className="report-section">
           <h4 className="report-section-title">{t('report.execSummary')}</h4>
           <div className="report-summary-card">
@@ -155,7 +155,7 @@ const Report = () => {
           </div>
         </section>
 
-        {/* ── Stat Grid ── */}
+        
         <div className="report-stat-grid">
           <div className="report-stat report-stat--critical">
             <AlertTriangle size={20} />
@@ -179,7 +179,7 @@ const Report = () => {
           </div>
         </div>
 
-        {/* ── Clause Distribution ── */}
+        
         <section className="report-section">
           <h4 className="report-section-title">{t('report.clauseDist')}</h4>
           <div className="clause-dist-grid">
@@ -198,7 +198,7 @@ const Report = () => {
           </div>
         </section>
 
-        {/* ── Action Items ── */}
+        
         <section className="report-section">
           <h4 className="report-section-title">{t('report.requiredActions')}</h4>
           <div className="action-list">
@@ -219,7 +219,7 @@ const Report = () => {
           </div>
         </section>
 
-        {/* ── Footer ── */}
+        
         <div className="report-footer">
           <p className="text-tertiary text-sm">
             {t('report.footer')}

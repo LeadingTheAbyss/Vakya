@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Load spacy model. 
+
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
@@ -16,14 +16,14 @@ def segment_contract(text: str) -> list[dict]:
     Segments a full contract text into a list of clauses.
     This uses a heuristic approach looking for common clause patterns.
     """
-    # A basic regex looking for numbered clauses or articles
-    # We use (?:^|\s) instead of ^ to handle poor PDF extraction where newlines are lost
+    
+    
     clause_pattern = re.compile(r"(?:^|\s)(?:\d{1,2}\.|\d{1,2}\.\d{1,2}|Article\s+[IVXLCDM]+|Section\s+\d+)\s+[A-Z]", re.MULTILINE | re.IGNORECASE)
     
     matches = list(clause_pattern.finditer(text))
     
     if not matches:
-        # Fallback: segment by paragraphs if no clear clause markers are found
+        
         return segment_by_paragraphs(text)
         
     clauses = []

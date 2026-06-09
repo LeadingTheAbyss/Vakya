@@ -22,7 +22,7 @@ const HowItWorks: React.FC = () => {
     const wrapper = wrapperRef.current;
     if (!canvas || !wrapper) return;
 
-    // Calculate max scroll dynamically based on canvas and viewport width
+    
     let scrollMax = canvas.scrollWidth - window.innerWidth + 200;
 
     const horizontalTween = gsap.to(canvas, {
@@ -43,7 +43,7 @@ const HowItWorks: React.FC = () => {
       },
     });
 
-    // Hide scroll instruction when user begins scrolling
+    
     gsap.to('.scroll-instruction', {
       opacity: 0,
       y: 20,
@@ -57,17 +57,17 @@ const HowItWorks: React.FC = () => {
 
 
 
-    // Animate the dots lighting up as they come into view
+    
     gsap.utils.toArray('.connector-dot').forEach((dot) => {
       gsap.fromTo(dot as Element,
         { backgroundColor: '#cbd5e1', boxShadow: 'none' },
         {
-          backgroundColor: '#10b981', // Success Emerald Green
+          backgroundColor: '#10b981', 
           boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)',
           scrollTrigger: {
             trigger: dot as Element,
             containerAnimation: horizontalTween,
-            start: 'left center', // Light up when it reaches the center of viewport
+            start: 'left center', 
             toggleActions: 'play none none reverse'
           }
         }
@@ -94,9 +94,9 @@ const HowItWorks: React.FC = () => {
       <div className="scroll-wrapper" ref={wrapperRef}>
         <div className="canvas" ref={canvasRef} style={{ width: '5600px' }}>
           <svg className="lines-layer" viewBox="0 0 5600 1000">
-            {/* Background track */}
+            
             <path className="line-path-base" d="M 400 500 L 4800 500" />
-            {/* Foreground fill (animated) */}
+            
             <path className="line-path-fill" d="M 400 500 L 4800 500" style={{ strokeDasharray: 4400, strokeDashoffset: 4400 }} />
           </svg>
 
@@ -104,13 +104,13 @@ const HowItWorks: React.FC = () => {
             const left = 800 + index * 800;
             return (
               <React.Fragment key={step.id}>
-                {/* Connector Dot (exactly halfway between cards) */}
+                
                 <div
                   className="clay-element connector-dot"
                   style={{ left: `${left - 400}px`, top: '500px' }}
                 ></div>
 
-                {/* Main Card */}
+                
                 <div
                   className="clay-element hiw-card"
                   style={{ left: `${left}px`, top: '500px' }}

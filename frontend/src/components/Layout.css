@@ -5,7 +5,7 @@
   background: var(--bg-canvas);
 }
 
-/* ── Sidebar ── */
+
 .sidebar {
   width: 220px;
   flex-shrink: 0;
@@ -32,11 +32,28 @@
 .sidebar-brand:hover { background: var(--bg-hover); }
 .brand-icon { color: var(--ai-primary); }
 .brand-name { font-size: 14px; font-weight: 650; color: var(--text-primary); }
+.logo-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.logo-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  background: white;
+}
 .sidebar-logo-img {
-  height: 40px;
-  width: auto;
+  width: 100%;
+  height: auto;
+  max-width: 130px;
   object-fit: contain;
-  max-width: 160px;
 }
 
 
@@ -67,7 +84,7 @@
   border: 1px solid rgba(99,102,241,0.2);
 }
 
-/* ── Sidebar Bottom ── */
+
 .sidebar-bottom {
   position: relative;
 }
@@ -118,7 +135,7 @@
 }
 .user-chevron { color: var(--text-tertiary); }
 
-/* ── Main ── */
+
 .app-main {
   flex: 1;
   display: flex;
@@ -221,7 +238,7 @@
   background: var(--bg-canvas);
 }
 
-/* ── User Popup Menu ── */
+
 .user-popup {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -317,7 +334,7 @@
 .user-popup-item.danger { color: var(--risk-critical); }
 .user-popup-item.danger:hover { background: var(--risk-critical-bg); }
 
-/* ── Auth Buttons (when not logged in) ── */
+
 .sidebar-auth-btns {
   display: flex;
   flex-direction: column;

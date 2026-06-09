@@ -25,7 +25,7 @@ def get_config():
         "ollama_model": os.getenv("OLLAMA_MODEL", "qwen3:8b")
     }
 
-# ── CORS ────────────────────────────────────────────────────────────────────────
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,7 +36,7 @@ app.add_middleware(
 
 from contextlib import asynccontextmanager
 
-# ── DB init on startup ───────────────────────────────────────────────────────────
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.init_db()
@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
 
 app.router.lifespan_context = lifespan
 
-# ── Pydantic models ──────────────────────────────────────────────────────────────
+
 class ClausesPayload(BaseModel):
     clauses: List[Dict[str, Any]]
     user_id: Optional[str] = None
@@ -78,7 +78,7 @@ class SaveContractPayload(BaseModel):
     status: str = "review"
 
 class ChatMessage(BaseModel):
-    role: str  # "human" or "assistant"
+    role: str  
     content: str
 
 class ChatPayload(BaseModel):
@@ -87,7 +87,7 @@ class ChatPayload(BaseModel):
     history: List[ChatMessage] = []
 
 
-# ── Auth / User routes ───────────────────────────────────────────────────────────
+
 
 @app.post("/api/auth/upsert")
 def auth_upsert(payload: UpsertUserPayload):
@@ -100,7 +100,7 @@ def auth_upsert(payload: UpsertUserPayload):
             photo=payload.photo,
             plan=payload.plan,
         )
-        # Convert datetimes to ISO strings for JSON serialisation
+        
         for key in ("created_at", "updated_at"):
             if user.get(key):
                 user[key] = user[key].isoformat()
@@ -139,7 +139,7 @@ def update_profile(user_id: str, payload: UpdateProfilePayload):
     return {"status": "ok", "user": user}
 
 
-# ── Contract routes ───────────────────────────────────────────────────────────────
+
 
 @app.get("/api/contracts/{user_id}")
 def list_contracts(user_id: str):
@@ -183,7 +183,7 @@ def save_contract(payload: SaveContractPayload):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ── Existing pipeline routes ──────────────────────────────────────────────────────
+
 
 @app.post("/api/upload")
 async def upload_document(file: UploadFile = File(...)):

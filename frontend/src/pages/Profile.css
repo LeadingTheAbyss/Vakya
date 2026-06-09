@@ -7,7 +7,7 @@
   gap: 24px;
 }
 
-/* ── Header ── */
+
 .profile-header {
   display: flex;
   align-items: center;
@@ -105,7 +105,7 @@
   border-color: rgba(99, 102, 241, 0.3);
 }
 
-/* ── Stats ── */
+
 .profile-stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -141,14 +141,14 @@
   color: var(--text-tertiary);
 }
 
-/* ── Body ── */
+
 .profile-body {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* ── Section ── */
+
 .profile-section {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -186,7 +186,7 @@
   gap: 16px;
 }
 
-/* ── Fields ── */
+
 .profile-field {
   display: flex;
   flex-direction: column;
@@ -254,7 +254,7 @@
   color: var(--risk-critical);
 }
 
-/* ── Save Button ── */
+
 .profile-save-btn {
   display: inline-flex;
   align-items: center;
@@ -283,13 +283,13 @@
   cursor: not-allowed;
 }
 
-/* ── Divider ── */
+
 .profile-divider {
   height: 1px;
   background: var(--border-subtle);
 }
 
-/* ── Sessions ── */
+
 .profile-session-item {
   display: flex;
   align-items: center;
@@ -318,7 +318,7 @@
   border: 1px solid var(--risk-safe-border);
 }
 
-/* ── Notification Toggles ── */
+
 .profile-toggle-row {
   display: flex;
   align-items: center;
@@ -363,7 +363,7 @@
   transform: translateX(18px);
 }
 
-/* ── Danger ── */
+
 .danger-row {
   display: flex;
   align-items: center;
@@ -426,7 +426,7 @@
   color: var(--text-primary);
 }
 
-/* ── Modal ── */
+
 .profile-modal-overlay {
   position: fixed;
   inset: 0;

@@ -35,7 +35,7 @@ const Settings = () => {
       </div>
 
       <div className="settings-body">
-        {/* Language */}
+        
         <section className="settings-section">
           <div className="settings-section-header">
             <Globe size={16} className="settings-icon" />
@@ -65,7 +65,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* Appearance */}
+        
         <section className="settings-section">
           <div className="settings-section-header">
             {theme === 'dark' ? <Moon size={16} className="settings-icon" /> : <Sun size={16} className="settings-icon" />}
@@ -102,7 +102,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* Analysis Defaults */}
+        
         <section className="settings-section">
           <div className="settings-section-header">
             <Sliders size={16} className="settings-icon" />
@@ -167,7 +167,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* Data & Privacy */}
+        
         <section className="settings-section">
           <div className="settings-section-header">
             <Database size={16} className="settings-icon" />

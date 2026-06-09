@@ -21,7 +21,7 @@
   width: 100%;
 }
 
-/* ── Title Block ── */
+
 .report-title-block {
   padding: 28px;
   background: var(--bg-surface);
@@ -62,7 +62,7 @@
   padding: 4px 10px;
 }
 
-/* ── Sections ── */
+
 .report-section {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -87,7 +87,7 @@
   color: var(--text-secondary);
 }
 
-/* ── Stat Grid ── */
+
 .report-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -121,7 +121,7 @@
   font-weight: 500;
 }
 
-/* ── Clause Distribution ── */
+
 .clause-dist-grid {
   display: flex;
   flex-direction: column;
@@ -150,7 +150,7 @@
 
 .clause-dist-pct { text-align: right; }
 
-/* ── Action List ── */
+
 .action-list {
   display: flex;
   flex-direction: column;
@@ -190,7 +190,7 @@
   color: var(--text-primary);
 }
 
-/* ── Footer ── */
+
 .report-footer {
   padding: 20px;
   background: var(--bg-surface);

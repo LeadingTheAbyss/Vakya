@@ -25,7 +25,7 @@ const Profile = () => {
   const [stats, setStats] = useState({ contracts_analyzed: 0, clauses_flagged: 0, reports_generated: 0 });
   const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // Load fresh profile + real stats from DB on mount
+  
   useEffect(() => {
     if (!user) return;
     setLoadingProfile(true);
@@ -39,10 +39,10 @@ const Profile = () => {
         setStats({
           contracts_analyzed: Number(dbStats?.contracts_analyzed ?? 0),
           clauses_flagged: Number(dbStats?.clauses_flagged ?? 0),
-          reports_generated: Number(dbStats?.contracts_analyzed ?? 0), // same count as analyses
+          reports_generated: Number(dbStats?.contracts_analyzed ?? 0), 
         });
       })
-      .catch(() => { /* use context defaults if unreachable */ })
+      .catch(() => {})
       .finally(() => setLoadingProfile(false));
   }, [user?.id]);
 
@@ -99,7 +99,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Stats Row */}
+      
       <div className="profile-stats-row">
         {statCards.map((s, i) => (
           <div key={i} className="profile-stat-card">
@@ -113,7 +113,7 @@ const Profile = () => {
       </div>
 
       <div className="profile-body">
-        {/* Personal Info */}
+        
         <section className="profile-section">
           <div className="profile-section-header">
             <User size={16} className="profile-section-icon" />
@@ -163,7 +163,7 @@ const Profile = () => {
           </div>
         </section>
 
-        {/* Security */}
+        
         <section className="profile-section">
           <div className="profile-section-header">
             <Shield size={16} className="profile-section-icon" />
@@ -226,7 +226,7 @@ const Profile = () => {
           </div>
         </section>
 
-        {/* Notifications */}
+        
         <section className="profile-section">
           <div className="profile-section-header">
             <Bell size={16} className="profile-section-icon" />
@@ -261,7 +261,7 @@ const Profile = () => {
           </div>
         </section>
 
-        {/* Danger Zone */}
+        
         <section className="profile-section danger">
           <div className="profile-section-header">
             <Trash2 size={16} className="profile-section-icon danger" />
@@ -295,7 +295,7 @@ const Profile = () => {
         </section>
       </div>
 
-      {/* Delete Confirm Modal */}
+      
       {showDeleteModal && (
         <div className="profile-modal-overlay" onClick={() => setShowDeleteModal(false)}>
           <div className="profile-modal" onClick={e => e.stopPropagation()}>

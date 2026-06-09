@@ -16,9 +16,9 @@ def chat_about_contract(
     """
     llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.3, num_ctx=2048)
 
-    # Build a compact clause context (keep tokens manageable)
+    
     clause_context_parts = []
-    for i, c in enumerate(clauses[:15], 1):          # cap at 15 clauses
+    for i, c in enumerate(clauses[:15], 1):          
         title = c.get("title") or c.get("type") or f"Clause {i}"
         text  = c.get("text") or c.get("original") or ""
         risk  = ""
@@ -52,7 +52,7 @@ Your job is to:
 """
 
     messages: list = [("system", system_prompt)]
-    for h in history[-8:]:   # keep last 8 turns of context
+    for h in history[-8:]:   
         messages.append((h["role"], h["content"]))
     messages.append(("human", user_message))
 

@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import fitz  
 import docx
 from langdetect import detect
 
@@ -9,12 +9,12 @@ def is_digital_pdf(pdf_path: str) -> bool:
     """Checks if a PDF contains selectable text."""
     doc = fitz.open(pdf_path)
     text_length = 0
-    # Check first few pages
+    
     for i in range(min(3, len(doc))):
         page = doc.load_page(i)
         text_length += len(page.get_text("text").strip())
     
-    # If there is meaningful text, it's digital
+    
     return text_length > 50
 
 def extract_text_from_digital_pdf(pdf_path: str) -> str:
@@ -33,7 +33,7 @@ def detect_document_language(text: str) -> str:
     if not text.strip():
         return "unknown"
     try:
-        # Detect on the first 1000 characters for speed
+        
         return detect(text[:1000])
     except Exception:
         return "unknown"

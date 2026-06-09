@@ -12,7 +12,7 @@ def save_upload_file(upload_file: UploadFile) -> str:
     if not upload_file.filename:
         raise HTTPException(status_code=400, detail="No filename provided")
     
-    # simple security check on extension
+    
     allowed_extensions = {".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"}
     ext = os.path.splitext(upload_file.filename)[1].lower()
     if ext not in allowed_extensions:

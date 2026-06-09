@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-/* ── CURSOR ── */
+
 .y2k-cursor {
   position: fixed;
   z-index: 9999;
@@ -41,7 +41,7 @@
   opacity: 0;
 }
 
-/* ── WRAPPER + PIN ── */
+
 .y2k-wrapper {
   position: relative;
   width: 100%;
@@ -49,12 +49,12 @@
   height: 100vh;
 }
 
-/* ── ELECTRIC BACKGROUND ── */
+
 .bg-plasma {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: var(--cream); /* Default fallback, will be overwritten by GSAP */
+  background: var(--cream); 
 }
 .bg-plasma::after {
   content: "";
@@ -67,7 +67,7 @@
   pointer-events: none;
 }
 
-/* ── IMAGE CONTAINER ── */
+
 .image-container {
   position: relative;
   width: 100%;
@@ -84,7 +84,7 @@
   will-change: transform;
 }
 
-/* ── HERO TEXT OVERLAY ── */
+
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -118,7 +118,7 @@
   will-change: transform;
 }
 
-/* ── SCANLINE OVERLAY ── */
+
 .y2k-scanlines {
   position: absolute;
   inset: 0;
@@ -134,7 +134,7 @@
   opacity: 0.6;
 }
 
-/* ── CORNER BRACKETS ── */
+
 .brackets {
   position: absolute;
   inset: 1.5rem;
@@ -174,7 +174,7 @@
   border-right-width: 3px;
 }
 
-/* ── FLOATING Y2K BADGES ── */
+
 .badge-float {
   position: absolute;
   z-index: 6;
@@ -202,7 +202,7 @@
   border-color: #fff;
 }
 
-/* ── STAR DECORATORS ── */
+
 .deco-star {
   position: absolute;
   z-index: 6;
@@ -212,7 +212,7 @@
   line-height: 1;
 }
 
-/* ── COUNTER / LABEL BAR ── */
+
 .hud-bar {
   position: absolute;
   bottom: 2rem;
@@ -241,7 +241,7 @@
   opacity: 0.4;
 }
 
-/* ── SECTION BELOW ── */
+
 .cp-credit {
   position: absolute;
   top: 1.75rem;
@@ -295,7 +295,7 @@
   user-select: none;
 }
 
-/* Each line is a block that holds the underline + char row */
+
 .bt-line {
   display: block;
   position: relative;
@@ -303,7 +303,7 @@
   margin-bottom: 0.05em;
 }
 
-/* Sliding underline — starts at scaleX(0) from left, expands to full on hover */
+
 .bt-underline {
   position: absolute;
   bottom: 0;
@@ -319,7 +319,7 @@
   transform: scaleX(1);
 }
 
-/* Pink underline for the second (em) line */
+
 .bt-line:nth-child(2) .bt-underline {
   background: var(--pink);
 }
@@ -327,7 +327,7 @@
   color: var(--pink);
 }
 
-/* Characters: NO overflow clipping — needed for hover cycle animation */
+
 .bt-chars-wrap {
   display: block;
 }
@@ -336,7 +336,7 @@
   display: inline;
 }
 
-/* Individual chars — inline-block so GSAP can translate them vertically */
+
 .bt-char {
   display: inline-block;
   will-change: transform, opacity;
@@ -347,7 +347,7 @@
 }
 
 
-/* ── SHORT SCREENS ── */
+
 @media (max-height: 600px) {
   .brackets {
     inset: 0.75rem;

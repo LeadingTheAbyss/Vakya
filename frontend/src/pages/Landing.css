@@ -4,7 +4,7 @@
   overflow-x: hidden;
 }
 
-/* ── Nav ── */
+
 .landing-nav {
   position: sticky;
   top: 0;
@@ -50,7 +50,7 @@
 
 .nav-actions { display: flex; gap: 8px; align-items: center; }
 
-/* ── Hero ── */
+
 .hero {
   position: relative;
   display: flex;
@@ -133,7 +133,7 @@
   animation: fadeUp 0.7s ease 0.2s both;
 }
 
-/* ── Agent Flow ── */
+
 .agent-flow {
   margin-top: 80px;
   width: 100%;
@@ -236,7 +236,7 @@
 }
 .agent-connector-arrow { display: flex; align-items: center; }
 
-/* ── Stats ── */
+
 .stats-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -263,7 +263,7 @@
   color: var(--text-secondary);
 }
 
-/* ── Features ── */
+
 .features-section {
   padding: 40px 80px 100px;
   max-width: 1100px;
@@ -280,7 +280,7 @@
   color: var(--text-primary);
   margin-bottom: 12px;
   letter-spacing: -0.02em;
-  /* removing uppercase so it reads naturally */
+  
   text-transform: none;
 }
 .section-header h2 {
@@ -330,7 +330,7 @@
 }
 .feature-card p { font-size: 13px; line-height: 1.6; }
 
-/* ── CTA Banner ── */
+
 .cta-banner {
   position: relative;
   text-align: center;
@@ -353,7 +353,7 @@
   margin-bottom: 12px;
 }
 
-/* ── Footer ── */
+
 .landing-footer {
   display: flex;
   align-items: center;
@@ -381,7 +381,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Stripe-style Stats Banner ── */
+
 .stats-section {
   position: relative;
   display: flex;
@@ -394,7 +394,7 @@
   transition: all 0.4s ease;
 }
 
-/* Gradient borders top and bottom */
+
 .stats-section::before,
 .stats-section::after {
   content: '';
@@ -409,7 +409,7 @@
 .stats-section::before { top: 0; }
 .stats-section::after { bottom: 0; }
 
-/* Highlight lines on section hover */
+
 .stats-section:hover::before,
 .stats-section:hover::after {
   background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.8), transparent);
@@ -425,12 +425,12 @@
   cursor: default;
 }
 
-/* Dim other items when hovering over the section */
+
 .stats-section:hover .stat-item {
   opacity: 0.4;
 }
 
-/* Highlight the specific hovered item */
+
 .stats-section .stat-item:hover {
   opacity: 1;
   transform: translateY(-2px);
@@ -452,7 +452,7 @@
   line-height: 1.4;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .stats-section {
     flex-wrap: wrap;

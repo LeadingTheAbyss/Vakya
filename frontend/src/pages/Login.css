@@ -5,7 +5,7 @@
   font-family: var(--font-sans);
 }
 
-/* ── Left Panel ── */
+
 .login-left {
   width: 480px;
   flex-shrink: 0;
@@ -132,7 +132,7 @@
   color: #475569;
 }
 
-/* ── Right Panel ── */
+
 .login-right {
   flex: 1;
   display: flex;
@@ -164,7 +164,7 @@
   color: var(--text-secondary);
 }
 
-/* ── Google Button ── */
+
 .google-btn {
   display: flex;
   align-items: center;
@@ -197,7 +197,7 @@
 
 .google-icon { flex-shrink: 0; }
 
-/* ── Divider ── */
+
 .login-divider {
   display: flex;
   align-items: center;
@@ -216,7 +216,7 @@
   font-weight: 500;
 }
 
-/* ── Form ── */
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -379,7 +379,7 @@
 
 .login-link:hover { color: var(--text-primary); }
 
-/* ── Responsive ── */
+
 @media (max-width: 860px) {
   .login-left { display: none; }
   .login-right { padding: 24px 16px; }

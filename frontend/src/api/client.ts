@@ -5,7 +5,7 @@ export const fetchConfig = async () => {
   if (!response.ok) throw new Error('Failed to fetch config');
   return response.json();
 };
-// ── Document pipeline ────────────────────────────────────────────────────────────
+
 
 export const uploadDocument = async (file: File) => {
   const formData = new FormData();
@@ -35,7 +35,7 @@ export const generateReport = async (analyzed_clauses: any[], executive_summary:
   return response.json();
 };
 
-// ── Auth / User ──────────────────────────────────────────────────────────────────
+
 
 export const upsertUser = async (user: {
   id: string; email: string; name: string; photo?: string; plan: string;
@@ -74,7 +74,7 @@ export const updateProfile = async (
   return response.json();
 };
 
-// ── Contracts ────────────────────────────────────────────────────────────────────
+
 
 export const fetchContracts = async (userId: string) => {
   const response = await fetch(`${API_BASE_URL}/contracts/${userId}`);
@@ -106,7 +106,7 @@ export const saveContract = async (payload: {
   return response.json();
 };
 
-// ── Chat ─────────────────────────────────────────────────────────────────────────
+
 
 export const chatWithContract = async (payload: {
   message: string;

@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import fitz  
 from paddleocr import PaddleOCR
 import logging
 
@@ -21,7 +21,7 @@ def extract_text_from_image(image_path: str) -> str:
     
     text = ""
     for line in result[0]:
-        # line[1][0] is the recognized text
+        
         text += line[1][0] + "\n"
     return text
 
@@ -32,13 +32,13 @@ def extract_text_from_scanned_pdf(pdf_path: str) -> str:
     
     for page_num in range(len(doc)):
         page = doc.load_page(page_num)
-        pix = page.get_pixmap(dpi=300) # Higher DPI for OCR
+        pix = page.get_pixmap(dpi=300) 
         
-        # Save temp image
+        
         temp_img_path = f"{pdf_path}_page_{page_num}.png"
         pix.save(temp_img_path)
         
-        # Run OCR
+        
         try:
             page_text = extract_text_from_image(temp_img_path)
             full_text += page_text + "\n"

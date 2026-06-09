@@ -1,4 +1,4 @@
-/* ── Loading Screen ─────────────────────────────────────────────────────────── */
+
 .loading-screen {
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
   white-space: nowrap;
 }
 
-/* ── Workspace ───────────────────────────────────────────────────────────────── */
+
 .analysis-workspace {
   display: flex;
   flex-direction: column;
@@ -124,7 +124,7 @@
 
 .workspace-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* ── Split Pane ──────────────────────────────────────────────────────────────── */
+
 .split-pane {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -161,7 +161,7 @@
   color: var(--text-tertiary);
 }
 
-/* ── Document Viewer ─────────────────────────────────────────────────────────── */
+
 .doc-viewer {
   flex: 1;
   overflow-y: auto;
@@ -224,7 +224,7 @@
   color: #111;
 }
 
-/* Override badge inside light doc */
+
 .doc-clause .badge { font-size: 10px; padding: 1px 6px; }
 
 .doc-clause-text { color: #333; font-size: 14px; }
@@ -245,7 +245,7 @@
 }
 .doc-clause-missing:hover { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,0.05); }
 
-/* ── Intelligence Pane ───────────────────────────────────────────────────────── */
+
 .pane-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-subtle);
@@ -283,7 +283,7 @@
   overflow-y: auto;
 }
 
-/* ── Agent Trace ─────────────────────────────────────────────────────────────── */
+
 .agent-trace {
   padding: 16px;
   display: flex;
@@ -367,7 +367,7 @@
   margin-top: 5px;
 }
 
-/* ── Risk Overview ───────────────────────────────────────────────────────────── */
+
 .risk-overview {
   padding: 16px;
   display: flex;
@@ -431,7 +431,7 @@
   margin-top: 8px;
 }
 
-/* ── Clause Detail ───────────────────────────────────────────────────────────── */
+
 .clause-detail {
   display: flex;
   flex-direction: column;
