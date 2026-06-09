@@ -490,7 +490,6 @@ const Analysis = () => {
           <span className="badge badge-critical">
             {t('analysis.risk')} {isCached ? cachedRiskScore : 72}/100
           </span>
-          {isCached && <span className="badge badge-safe" style={{ marginLeft: 4 }}>{t('analysis.cached')}</span>}
         </div>
         <div className="workspace-header-actions">
           <button

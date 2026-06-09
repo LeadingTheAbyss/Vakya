@@ -147,15 +147,7 @@ const Layout = () => {
       <div className="app-main">
         {/* Topbar */}
         <header className="app-topbar">
-          <div className="topbar-search-wrapper">
-            <Search size={14} className="topbar-search-icon" />
-            <input
-              type="text"
-              placeholder={t('layout.searchPlaceholder')}
-              className="topbar-search-input"
-            />
-            <kbd className="topbar-kbd">⌘K</kbd>
-          </div>
+
           <div className="topbar-right">
             <button className="btn-icon" style={{ position: 'relative' }}>
               <Bell size={16} />

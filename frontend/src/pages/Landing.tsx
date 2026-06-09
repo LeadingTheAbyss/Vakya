@@ -54,7 +54,7 @@ const Landing = () => {
           <a href="#how">How it works</a>
         </div>
         <div className="nav-actions">
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/app')}>Log in</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/login')}>Log in</button>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/app')}>
             Get started <ArrowRight size={14} />
           </button>
@@ -102,7 +102,7 @@ const Landing = () => {
         <button
           className="btn btn-primary"
           style={{ padding: '11px 28px', fontSize: '14px', marginTop: '8px' }}
-          onClick={() => navigate('/app')}
+          onClick={() => navigate('/login')}
         >
           Analyze your first contract <ArrowRight size={16} />
         </button>

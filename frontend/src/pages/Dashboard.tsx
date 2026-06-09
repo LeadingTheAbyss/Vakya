@@ -81,14 +81,12 @@ const Dashboard = () => {
           <p className="text-sm text-secondary" style={{ marginTop: 4 }}>
             {loading
               ? t('dashboard.loading')
-              : `${contracts.length} ${contracts.length !== 1 ? t('dashboard.contracts') : t('dashboard.contract')} · ${pendingReview} ${t('dashboard.pendingReview')} · ${criticalCount} ${criticalCount !== 1 ? t('dashboard.criticalRisks') : t('dashboard.criticalRisk')}`
+              : `${contracts.length} ${contracts.length !== 1 ? t('dashboard.contracts') : t('dashboard.contract')}`
             }
           </p>
         </div>
         <div className="dashboard-header-actions">
-          <button className="btn btn-ghost btn-sm">
-            <TrendingUp size={14} /> {t('dashboard.riskReport')}
-          </button>
+
           <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer' }}>
             <UploadCloud size={14} /> {t('dashboard.uploadContract')}
             <input
