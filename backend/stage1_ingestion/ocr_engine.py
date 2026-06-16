@@ -2,20 +2,29 @@ import os
 import fitz  
 import logging
 from PIL import Image
-from google import genai
+import base64
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage
 
 logger = logging.getLogger(__name__)
 
 def extract_text_from_image(image_path: str) -> str:
-    """Extracts text from a single image using Gemini."""
+    """Extracts text from a single image using Gemini via LangChain."""
     try:
-        client = genai.Client()
-        image = Image.open(image_path)
-        response = client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=[image, "Extract all the text from this image exactly as written. Output ONLY the extracted text, no commentary."]
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        
+        # We need to make sure the image is saved properly and we can read it as bytes
+        with open(image_path, "rb") as image_file:
+            image_data = base64.b64encode(image_file.read()).decode('utf-8')
+            
+        message = HumanMessage(
+            content=[
+                {"type": "text", "text": "Extract all the text from this image exactly as written. Output ONLY the extracted text, no commentary."},
+                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}
+            ]
         )
-        return response.text
+        response = llm.invoke([message])
+        return response.content
     except Exception as e:
         logger.error(f"Error extracting text with Gemini: {e}")
         return ""

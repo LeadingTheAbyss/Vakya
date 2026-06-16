@@ -5,7 +5,6 @@ langgraph
 langchain-community
 langchain-core
 langchain-google-genai
-google-genai
 PyMuPDF
 pillow
 python-docx

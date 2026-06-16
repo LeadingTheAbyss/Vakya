@@ -44,7 +44,11 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db.init_db()
+    try:
+        db.init_db()
+        print("Database initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize database on startup: {e}")
     yield
 
 app.router.lifespan_context = lifespan
