@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 from utils.llm_helper import invoke_structured
 
@@ -10,7 +10,7 @@ class NegotiationInfo(BaseModel):
     counter_terms: list[str] = Field(description="List of negotiation points or counter-terms to present to the other party.")
 
 def suggest_negotiation(clause_text: str, risk_level: str, unfair_terms: list[str]) -> dict:
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.2, num_ctx=2048)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.2)
     try:
         unfair_str = ", ".join(unfair_terms) if unfair_terms else "None"
         messages = [

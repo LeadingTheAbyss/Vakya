@@ -1,16 +1,7 @@
-import spacy
 import re
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    logger.warning("Spacy model 'en_core_web_sm' not found. Will use regex fallback exclusively or fail.")
-    nlp = None
-
 def segment_contract(text: str) -> list[dict]:
     """
     Segments a full contract text into a list of clauses.

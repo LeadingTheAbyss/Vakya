@@ -1,4 +1,4 @@
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 import os, json
 
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
@@ -14,7 +14,7 @@ def chat_about_contract(
     `clauses` – the analyzed clause dicts (may have text, risk_info, compliance_info, etc.)
     `history`  – list of {role, content} prior messages in this chat session
     """
-    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0.3, num_ctx=2048)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.3)
 
     
     clause_context_parts = []

@@ -4,13 +4,9 @@ pydantic
 langgraph
 langchain-community
 langchain-core
-langchain-ollama
-chromadb
-sentence-transformers
+langchain-google-genai
+google-genai
 PyMuPDF
-spacy
-streamlit
-paddleocr
-paddlepaddle
+pillow
 python-docx
 langdetect
