@@ -1,2 +1,26 @@
+[project]
+name = "vakya-backend"
+version = "0.1.0"
+description = "Vakya Backend FastAPI"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "langgraph",
+    "langchain-community",
+    "langchain-core",
+    "langchain-ollama",
+    "chromadb",
+    "sentence-transformers",
+    "PyMuPDF",
+    "spacy",
+    "streamlit",
+    "paddleocr",
+    "paddlepaddle",
+    "python-docx",
+    "langdetect"
+]
+
 [tool.vercel]
 entrypoint = "backend.main:app"
