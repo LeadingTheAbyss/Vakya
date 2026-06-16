@@ -10,3 +10,6 @@ PyMuPDF
 pillow
 python-docx
 langdetect
+python-dotenv
+psycopg2-binary
+python-multipart

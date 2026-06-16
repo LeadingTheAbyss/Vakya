@@ -4,6 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import os
+import sys
+
+# Crucial fix for Vercel: allow python to find local modules in the backend folder
+sys.path.append(os.path.dirname(__file__))
+
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 

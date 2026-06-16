@@ -15,7 +15,10 @@ dependencies = [
     "PyMuPDF",
     "pillow",
     "python-docx",
-    "langdetect"
+    "langdetect",
+    "python-dotenv",
+    "psycopg2-binary",
+    "python-multipart"
 ]
 
 [tool.vercel]
