@@ -226,7 +226,7 @@ async def analyze_document(payload: ClausesPayload):
 @app.post("/api/report")
 async def generate_report(payload: ReportPayload):
     try:
-        output_path = "data/reports/final_report.docx"
+        output_path = "/tmp/reports/final_report.docx"
         import os
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         generate_docx_report(

@@ -2,17 +2,20 @@ import os
 import shutil
 from fastapi import UploadFile, HTTPException
 
-UPLOAD_DIR = "data/uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+UPLOAD_DIR = "/tmp/uploads"
 
 def save_upload_file(upload_file: UploadFile) -> str:
     """
-    Saves an uploaded file to the local directory temporarily.
+    Saves an uploaded file to the /tmp directory temporarily.
+    /tmp is the only writable directory on Vercel serverless functions.
     """
     if not upload_file.filename:
         raise HTTPException(status_code=400, detail="No filename provided")
     
-    
+    # Move makedirs inside the function so it doesn't run at import time
+    # (which would crash Vercel's read-only filesystem on cold start)
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+
     allowed_extensions = {".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"}
     ext = os.path.splitext(upload_file.filename)[1].lower()
     if ext not in allowed_extensions:
