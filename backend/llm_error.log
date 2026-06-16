@@ -1597,3 +1597,84 @@ key_obligations
     For further information visit https://errors.pydantic.dev/2.12/v/missing
 Content: {"category": "Entire Agreement", "explanation": "The text discusses the superseding of prior agreements, the requirement for written modifications, and the severability of invalid clauses, which are core elements of an 'Entire Agreement' clause. While this category is not explicitly listed in the provided options, it is the most accurate classification given the content."}
 ----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: llama-server process has terminated: exit status 0xc0000409: The system detected an overrun of a stack-based buffer in this application. This overrun could potentially allow a malicious user to gain control of this application.: CUDA error: shared object initialization failed
+CUDA error (status code: 500)
+Content: N/A
+----------------------------------------
+Failed to parse structured output. Error: 3 validation errors for ClauseInfo
+category
+  Field required [type=missing, input_value={'thought': 'The user wan...onfidentiality clause.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+summary
+  Field required [type=missing, input_value={'thought': 'The user wan...onfidentiality clause.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+key_obligations
+  Field required [type=missing, input_value={'thought': 'The user wan...onfidentiality clause.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+Content: {"thought": "The user wants me to classify a legal clause and extract specific fields into a JSON format. The input is a confidentiality clause."}
+----------------------------------------
+Failed to parse structured output. Error: 3 validation errors for RiskInfo
+risk_level
+  Field required [type=missing, input_value={'thought': 'The user wan... some industries, but '}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+unfair_one_sided_terms
+  Field required [type=missing, input_value={'thought': 'The user wan... some industries, but '}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+risk_explanation
+  Field required [type=missing, input_value={'thought': 'The user wan... some industries, but '}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+Content: {"thought": "The user wants a JSON response evaluating a specific legal clause regarding confidentiality. \n\nClause Analysis:\n- \"Both parties agree to keep all proprietary information confidential for 2 years following termination of this Agreement.\"\n- \"This obligation does not apply to information already in the public domain.\"\n\nRisk Assessment:\n1. Duration: 2 years is relatively short/standard for some industries, but " 	  
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+----------------------------------------
