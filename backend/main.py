@@ -27,7 +27,7 @@ app = FastAPI(title="Contract Sentinel API")
 def get_config():
     return {
         "status": "ok",
-        "ollama_model": os.getenv("OLLAMA_MODEL", "qwen3:8b")
+        "model": os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
     }
 
 
