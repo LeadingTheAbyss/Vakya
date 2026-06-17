@@ -16,7 +16,7 @@
 
 ## 🚀 Live Deployment
 
-<a href="<Deployment_In_Process>">
+<a href="https://vakyalegalai.vercel.app">
   <img 
     src="https://img.shields.io/badge/Open%20Application-111111?style=for-the-badge&logo=render&logoColor=white" 
   />
