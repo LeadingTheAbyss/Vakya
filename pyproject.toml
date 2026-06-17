@@ -10,7 +10,7 @@ dependencies = [
     "langgraph",
     "langchain-community",
     "langchain-core",
-    "langchain-google-genai",
+    "langchain-groq",
     "PyMuPDF",
     "pillow",
     "python-docx",

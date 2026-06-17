@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 import os
 from utils.llm_helper import invoke_structured
 
@@ -11,7 +11,7 @@ class ComplianceInfo(BaseModel):
     compliance_issues: str = Field(description="Explanation of Indian legal & tax compliance issues, if any")
 
 def check_compliance(clause_text: str, category: str) -> dict:
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
     try:
         messages = [
             ("system", "You are an expert in Indian Legal & Tax compliance. Evaluate the clause for compliance with Indian law (e.g. GST, Companies Act) and identify any missing mandatory elements."),
