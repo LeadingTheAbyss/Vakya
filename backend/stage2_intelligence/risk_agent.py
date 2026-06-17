@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 import os
 from utils.llm_helper import invoke_structured
 
@@ -11,7 +11,7 @@ class RiskInfo(BaseModel):
     risk_explanation: str = Field(description="Explanation of why this clause carries the assigned risk level")
 
 def assess_risk(clause_text: str, compliance_status: str) -> dict:
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.1)
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
     try:
         messages = [
             ("system", "You are an expert legal risk analyst. Identify unfair or one-sided clauses, and assign a risk level (Low, Medium, High)."),

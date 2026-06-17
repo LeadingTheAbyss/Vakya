@@ -3,7 +3,7 @@ import fitz
 import logging
 from PIL import Image
 import base64
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def extract_text_from_image(image_path: str) -> str:
     """Extracts text from a single image using Gemini via LangChain."""
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        llm = ChatGroq(model="llama-3.2-11b-vision-preview")
         
         # We need to make sure the image is saved properly and we can read it as bytes
         with open(image_path, "rb") as image_file:

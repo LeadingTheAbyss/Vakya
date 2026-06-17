@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 import os
 import json
 from utils.llm_helper import invoke_structured
@@ -12,7 +12,7 @@ class ExecutiveSummary(BaseModel):
     key_recommendations: list[str] = Field(description="High-level strategic recommendations for the negotiation.")
 
 def generate_report_summary(analyzed_clauses: list[dict]) -> dict:
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.2)
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2)
     
     
     simplified_analysis = []
