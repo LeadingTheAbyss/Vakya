@@ -36,9 +36,8 @@
 </ul>
 
 <p align="center">
-  <img src="https://github.com/Witty-Walter/Vakya/releases/download/v1.0.0/Frontend_Demo.gif" alt="Vakya Frontend Demo" width="800px">
+  <img src="/image/Frontend_Demo.gif" alt="Vakya Frontend Demo" width="800">
 </p>
-
 
 <h4>Backend Services:</h4>
 <ul>
