@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UploadCloud, FileType, FileText } from 'lucide-react';
+import { UploadCloud, FileType, FileText, Sparkles, ShieldCheck, Lock, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './Upload.css';
 
@@ -35,11 +35,14 @@ const Upload = () => {
   return (
     <div className="upload-page">
       <div className="upload-header">
+        <span className="upload-eyebrow">
+          <Sparkles size={12} /> Multi-Agent Legal Analysis
+        </span>
         <h1>Start Your Analysis</h1>
         <p>Upload a contract to let the Sentinel agents detect hidden risks.</p>
       </div>
 
-      <div 
+      <div
         className={`upload-dropzone ${dragActive ? 'active' : ''}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -52,12 +55,12 @@ const Upload = () => {
         </div>
         <h3>Drag & Drop your contract here</h3>
         <p>Supports PDF, DOCX, and Scanned Images (up to 50MB)</p>
-        
+
         <div className="upload-divider">
           <span>OR</span>
         </div>
-        
-        <label className="btn btn-primary" style={{ cursor: 'pointer' }}>
+
+        <label className="btn btn-primary upload-browse-btn" style={{ cursor: 'pointer' }}>
           Browse Files
           <input
             type="file"
@@ -66,18 +69,28 @@ const Upload = () => {
             onChange={handleFileChange}
           />
         </label>
+
+        <div className="upload-trust-row">
+          <span className="upload-trust-item"><Lock size={13} /> End-to-end encrypted</span>
+          <span className="upload-trust-item"><ShieldCheck size={13} /> Local inference</span>
+          <span className="upload-trust-item"><Zap size={13} /> Results in seconds</span>
+        </div>
       </div>
 
       <div className="upload-features">
         <div className="uf-card">
-          <FileText size={20} className="uf-icon" />
+          <div className="uf-icon-wrap">
+            <FileText size={18} className="uf-icon" />
+          </div>
           <div className="uf-text">
             <h4>Smart OCR Included</h4>
             <span>Automatically extracts text from poor quality scans.</span>
           </div>
         </div>
         <div className="uf-card">
-          <FileType size={20} className="uf-icon" />
+          <div className="uf-icon-wrap">
+            <FileType size={18} className="uf-icon" />
+          </div>
           <div className="uf-text">
             <h4>Bilingual Support</h4>
             <span>Process contracts in both English and Hindi seamlessly.</span>
