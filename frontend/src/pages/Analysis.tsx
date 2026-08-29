@@ -9,6 +9,7 @@ import './Analysis.css';
 import { uploadDocument, analyzeDocument, saveContract, fetchContractDetail, fetchConfig } from '../api/client';
 import { useApp } from '../context/AppContext';
 import ContractChat from '../components/ContractChat';
+import BookLoader from '../components/BookLoader';
 
 
 interface AgentStep {
@@ -169,6 +170,7 @@ const Analysis = () => {
 
   const [, setLoadingStep] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [workspaceRevealed, setWorkspaceRevealed] = useState(false);
   const [activeTab, setActiveTab] = useState<'trace' | 'risks' | 'rewrite'>('trace');
   const [selectedClause, setSelectedClause] = useState<Clause | null>(null);
   const [expandedAgents, setExpandedAgents] = useState<Set<number>>(new Set([1, 2, 3]));
@@ -440,40 +442,15 @@ const Analysis = () => {
   };
 
   
-  if (!isLoaded) {
+  if (!workspaceRevealed) {
     return (
       <div className="loading-screen">
-        <div className="loading-card animate-fade-up">
-          <div className="loading-header">
-            <div className="loading-orb animate-pulse-glow" />
-            <div>
-              <h3>{t('analysis.processing')}</h3>
-              <p className="text-secondary text-sm">
-                {file ? file.name : 'Vendor_Agreement_TechCorp.pdf'}
-              </p>
-            </div>
-          </div>
-          
-
-
-          <div className="loading-steps">
-            {agents.map((step, _index) => (
-              <div key={step.id} className={`loading-step loading-step--${step.status}`}>
-                <div className="loading-step-icon">
-                  {step.status === 'done' ? (
-                    <CheckCircle2 size={14} />
-                  ) : step.status === 'active' ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : (
-                    step.icon
-                  )}
-                </div>
-                <span className="loading-step-name">{step.name}</span>
-                <span className="loading-step-desc">{step.desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <BookLoader
+          fileName={file ? file.name : 'Vendor_Agreement_TechCorp.pdf'}
+          agents={agents}
+          complete={isLoaded}
+          onFinished={() => setWorkspaceRevealed(true)}
+        />
       </div>
     );
   }
