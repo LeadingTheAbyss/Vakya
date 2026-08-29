@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=IM+Fell+English:ital@0;1&display=swap');
+
+.book-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  perspective: 1400px;
+}
+
+.book-wrapper {
+  position: relative;
+  width: 440px;
+  max-width: 88vw;
+  height: 300px;
+  transition: transform 0.95s cubic-bezier(0.6, -0.15, 0.7, 0.1), opacity 0.85s ease-in 0.15s;
+  will-change: transform;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.45));
+}
+
+.book-scene--flying .book-wrapper {
+  transform: translateY(-820px) translateX(60px) rotate(-24deg) scale(0.4);
+  opacity: 0;
+}
+
+.book-perspective {
+  width: 100%;
+  height: 100%;
+  perspective: 1400px;
+}
+
+
+.book-flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  transform: rotateY(0deg) rotateX(0deg);
+}
+
+.book-flip--open {
+  transform: rotateY(180deg);
+}
+
+.book-flip--closed { transform: rotateY(0deg) scale(0.94); }
+.book-flip--opening { transform: rotateY(180deg) scale(1.02); }
+.book-flip--closing { transform: rotateY(0deg) scale(0.98); }
+.book-flip--flying { transform: rotateY(0deg) scale(0.94); }
+
+
+.book-face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.book-face--front {
+  background:
+    linear-gradient(155deg, rgba(255,255,255,0.06), transparent 40%),
+    radial-gradient(circle at 30% 20%, #5a3a22 0%, #3b2314 55%, #1e1209 100%);
+  border: 1px solid rgba(201, 160, 74, 0.35);
+  box-shadow: inset 0 0 0 6px rgba(0,0,0,0.25), inset 0 0 40px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-frame {
+  width: 84%;
+  height: 78%;
+  border: 2px solid rgba(201, 160, 74, 0.55);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: inset 0 0 18px rgba(201,160,74,0.12);
+}
+
+.cover-emblem {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #c9a04a;
+  color: #e9c876;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'UnifrakturCook', serif;
+  font-size: 28px;
+  box-shadow: 0 0 14px rgba(201,160,74,0.35), inset 0 0 8px rgba(201,160,74,0.25);
+}
+
+.cover-title {
+  font-family: 'UnifrakturCook', serif;
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  color: #e9c876;
+  text-shadow: 0 0 12px rgba(201,160,74,0.4);
+}
+
+.cover-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(233, 200, 118, 0.7);
+  letter-spacing: 0.04em;
+}
+
+
+.book-face--back {
+  transform: rotateY(180deg);
+  display: flex;
+  background:
+    linear-gradient(120deg, rgba(0,0,0,0.08), transparent 30%),
+    linear-gradient(#efe0bd, #e6d3a8);
+  border: 1px solid rgba(120, 90, 45, 0.4);
+}
+
+.book-spine-shadow {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 26px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(60,40,15,0.28), rgba(60,40,15,0.05) 45%, rgba(60,40,15,0.05) 55%, rgba(60,40,15,0.28));
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.35), transparent 40%),
+    radial-gradient(circle at 90% 95%, rgba(120,90,40,0.12), transparent 45%);
+}
+
+.page--left { border-right: none; }
+.page--right {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.page-heading {
+  font-family: 'UnifrakturCook', serif;
+  font-size: 17px;
+  color: #4a3210;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(74, 50, 16, 0.25);
+  padding-bottom: 8px;
+}
+
+.page-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-line {
+  font-family: 'IM Fell English', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #3a2a10;
+  line-height: 1.6;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pen-nib {
+  display: inline-flex;
+  transform-origin: 6% 50%;
+  transform: rotate(-32deg);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+  animation: penBob 0.55s ease-in-out infinite;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+@keyframes penBob {
+  0%, 100% { transform: rotate(-32deg) translateY(0); }
+  50%      { transform: rotate(-27deg) translateY(-2.5px); }
+}
+
+.page-seal {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #b5432f, #7a1f14 70%, #5c150c 100%);
+  color: #f2d9b0;
+  font-family: 'UnifrakturCook', serif;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35), inset 0 0 10px rgba(0,0,0,0.35);
+}
+
+.page-flourish {
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74,50,16,0.4), transparent);
+}
+
+
+.book-wing {
+  position: absolute;
+  top: 44%;
+  width: 130px;
+  height: 90px;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 30%, #ffffff, #f1f1f6 55%, #d8d8e2 100%);
+  clip-path: polygon(0% 50%, 20% 20%, 45% 0%, 70% 10%, 100% 35%, 85% 55%, 95% 75%, 65% 70%, 40% 90%, 20% 75%, 30% 55%);
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+  transition: opacity 0.3s ease;
+}
+.book-wing--left {
+  left: -70px;
+  transform-origin: right center;
+  transform: scaleX(-1);
+}
+.book-wing--right {
+  right: -70px;
+  transform-origin: left center;
+}
+
+.book-scene--closing .book-wing,
+.book-scene--flying .book-wing {
+  opacity: 1;
+  animation-duration: 0.32s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.book-scene--closing .book-wing--left,
+.book-scene--flying .book-wing--left {
+  animation-name: wingFlapLeft;
+}
+.book-scene--closing .book-wing--right,
+.book-scene--flying .book-wing--right {
+  animation-name: wingFlapRight;
+  animation-delay: 0.06s;
+}
+
+@keyframes wingFlapLeft {
+  0%, 100% { transform: scaleX(-1) rotate(0deg); }
+  50%      { transform: scaleX(-1) rotate(-22deg); }
+}
+@keyframes wingFlapRight {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(22deg); }
+}
