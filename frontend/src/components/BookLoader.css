@@ -81,42 +81,21 @@
   justify-content: center;
   gap: 10px;
   box-shadow: inset 0 0 18px rgba(201,160,74,0.12);
+  padding: 12px;
 }
 
-.cover-emblem {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px solid #c9a04a;
-  color: #e9c876;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'UnifrakturCook', serif;
-  font-size: 28px;
-  box-shadow: 0 0 14px rgba(201,160,74,0.35), inset 0 0 8px rgba(201,160,74,0.25);
-}
-
-.cover-title {
-  font-family: 'UnifrakturCook', serif;
-  font-size: 30px;
-  letter-spacing: 0.06em;
-  color: #e9c876;
-  text-shadow: 0 0 12px rgba(201,160,74,0.4);
-}
-
-.cover-subtitle {
-  font-family: 'IM Fell English', serif;
-  font-style: italic;
-  font-size: 13px;
-  color: rgba(233, 200, 118, 0.7);
-  letter-spacing: 0.04em;
+.cover-logo {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  filter: drop-shadow(0 0 16px rgba(201,160,74,0.35));
 }
 
 
 .book-face--back {
   transform: rotateY(180deg);
   display: flex;
+  overflow: visible;
   background:
     linear-gradient(120deg, rgba(0,0,0,0.08), transparent 30%),
     linear-gradient(#efe0bd, #e6d3a8);
@@ -137,19 +116,29 @@
 .page {
   position: relative;
   flex: 1;
-  padding: 22px 24px;
+  padding: 22px 24px 22px 46px;
   display: flex;
   flex-direction: column;
+  background-color: #ddc99a;
   background-image:
-    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.35), transparent 40%),
-    radial-gradient(circle at 90% 95%, rgba(120,90,40,0.12), transparent 45%);
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 27px,
+      rgba(90, 65, 30, 0.22) 28px
+    ),
+    linear-gradient(90deg, transparent 0px, transparent 21px, rgba(150, 40, 30, 0.4) 22px, rgba(150, 40, 30, 0.4) 23px, transparent 24px),
+    radial-gradient(circle at 8% 92%, rgba(110, 75, 30, 0.28), transparent 30%),
+    radial-gradient(circle at 92% 8%, rgba(110, 75, 30, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 85%, rgba(90, 55, 20, 0.18), transparent 35%),
+    radial-gradient(circle at 15% 15%, rgba(255, 250, 230, 0.4), transparent 45%),
+    linear-gradient(120deg, rgba(120, 90, 40, 0.1), transparent 55%);
+  box-shadow: inset 0 0 40px rgba(80, 55, 20, 0.35);
 }
 
 .page--left { border-right: none; }
 .page--right {
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
+  padding-left: 24px;
 }
 
 .page-heading {
@@ -165,9 +154,11 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  overflow: visible;
 }
 
 .page-line {
+  position: relative;
   font-family: 'IM Fell English', serif;
   font-size: 16px;
   font-style: italic;
@@ -177,40 +168,37 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  overflow: visible;
 }
 
 .pen-nib {
+  position: absolute;
+  left: 96%;
+  top: 50%;
   display: inline-flex;
-  transform-origin: 6% 50%;
-  transform: rotate(-32deg);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
-  animation: penBob 0.55s ease-in-out infinite;
+  width: 260px;
+  transform-origin: 8% 55%;
+  transform: translateY(-52%) rotate(-32deg) scale(1.12);
+  filter: drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.5));
+  animation: penBob 0.6s ease-in-out infinite;
   flex-shrink: 0;
-  margin-left: 2px;
+  pointer-events: none;
+  z-index: 5;
 }
+.pen-nib svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.pen-feather {
+  animation: featherFlutter 2.6s ease-in-out infinite;
+  transform-origin: 330px 100px;
+}
+
 @keyframes penBob {
-  0%, 100% { transform: rotate(-32deg) translateY(0); }
-  50%      { transform: rotate(-27deg) translateY(-2.5px); }
+  0%, 100% { transform: translateY(-52%) rotate(-32deg) scale(1.12); }
+  50%      { transform: translateY(calc(-52% - 3px)) rotate(-28deg) scale(1.12); }
 }
-
-.page-seal {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #b5432f, #7a1f14 70%, #5c150c 100%);
-  color: #f2d9b0;
-  font-family: 'UnifrakturCook', serif;
-  font-size: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.35), inset 0 0 10px rgba(0,0,0,0.35);
-}
-
-.page-flourish {
-  width: 60%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(74,50,16,0.4), transparent);
+@keyframes featherFlutter {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-2.5deg); }
 }
 
 

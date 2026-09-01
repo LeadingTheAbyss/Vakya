@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './BookLoader.css';
+import vakyaLogo from '../images/logo_nobg.png';
 
 interface AgentLike {
   id: number;
@@ -89,8 +90,6 @@ const BookLoader = ({ fileName, agents, complete, onFinished }: BookLoaderProps)
     return () => { cancelled = true; };
   }, [complete]);
 
-  const displayName = fileName.replace(/\.[^/.]+$/, '');
-
   return (
     <div className={`book-scene book-scene--${phase}`}>
       <div className="book-wrapper">
@@ -102,21 +101,19 @@ const BookLoader = ({ fileName, agents, complete, onFinished }: BookLoaderProps)
 
             <div className="book-face book-face--front">
               <div className="cover-frame">
-                <div className="cover-emblem">V</div>
-                <div className="cover-title">VAKYA</div>
-                <div className="cover-subtitle">Legal Grimoire</div>
+                <img className="cover-logo" src={vakyaLogo} alt="Vakya" />
               </div>
             </div>
 
             <div className="book-face book-face--back">
               <div className="book-spine-shadow" />
               <div className="page page--left">
-                <div className="page-heading">{displayName || 'Untitled Contract'}</div>
+                <div className="page-heading">Uploaded Bond</div>
                 <div className="page-rules">
                   <p className="page-line">
                     {typed}
                     <span className="pen-nib" aria-hidden="true">
-                      <svg width="58" height="32" viewBox="0 0 110 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg width="220" height="120" viewBox="0 0 420 220" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                           <linearGradient id="penBarrel" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#a9d4ff" />
@@ -136,32 +133,43 @@ const BookLoader = ({ fileName, agents, complete, onFinished }: BookLoaderProps)
                             <stop offset="72%" stopColor="#9498a0" />
                             <stop offset="100%" stopColor="#585c62" />
                           </linearGradient>
+                          <linearGradient id="featherLight" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#f4ede0" />
+                            <stop offset="55%" stopColor="#e2d3b3" />
+                            <stop offset="100%" stopColor="#b89b6c" />
+                          </linearGradient>
+                          <linearGradient id="featherShade" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#d8c7a0" />
+                            <stop offset="100%" stopColor="#9c7f52" />
+                          </linearGradient>
                         </defs>
 
-                        <path d="M2 15 18 8.5 22.5 15 18 21.5Z" fill="url(#penSilver)" stroke="#3a3d40" strokeWidth="0.7" />
-                        <line x1="9" y1="15" x2="20.5" y2="15" stroke="#3a3d40" strokeWidth="0.6" />
-                        <circle cx="3.2" cy="15" r="1.2" fill="#1a1a1a" />
+                        {/* quill feather, fanning out behind the barrel */}
+                        <g className="pen-feather">
+                          <path d="M330 108 C 400 60, 430 -10, 404 -46 C 392 4, 362 40, 330 66 Z" fill="url(#featherLight)" stroke="#8a6f45" strokeWidth="1.4" />
+                          <path d="M330 108 C 392 82, 432 40, 432 2 C 404 34, 366 62, 330 82 Z" fill="url(#featherShade)" stroke="#8a6f45" strokeWidth="1.4" />
+                          <path d="M330 112 C 396 118, 440 108, 452 78 C 416 92, 372 96, 330 96 Z" fill="url(#featherLight)" stroke="#8a6f45" strokeWidth="1.4" />
+                          <path d="M330 116 C 392 138, 432 148, 452 132 C 412 130, 372 122, 330 108 Z" fill="url(#featherShade)" stroke="#8a6f45" strokeWidth="1.4" />
+                          <path d="M330 60 L 452 -20" stroke="#7a6038" strokeWidth="2" strokeLinecap="round" />
+                        </g>
 
-                        <rect x="20.5" y="10" width="8" height="10" rx="1.6" fill="#25282c" />
+                        <path d="M8 60 68 34 90 60 68 86Z" fill="url(#penSilver)" stroke="#3a3d40" strokeWidth="2.4" />
+                        <line x1="34" y1="60" x2="82" y2="60" stroke="#3a3d40" strokeWidth="2" />
+                        <circle cx="12" cy="60" r="4.5" fill="#1a1a1a" />
 
-                        <rect x="27.5" y="7.5" width="59" height="15" rx="7.5" fill="url(#penBarrel)" stroke="#08234d" strokeWidth="0.7" />
-                        <rect x="32" y="9.3" width="50" height="2.6" rx="1.3" fill="#d9ecff" opacity="0.6" />
+                        <rect x="82" y="40" width="32" height="40" rx="6" fill="#25282c" />
 
-                        <rect x="84" y="7" width="6.5" height="16" rx="1.2" fill="url(#penGold)" stroke="#5c3d0d" strokeWidth="0.6" />
+                        <rect x="110" y="30" width="230" height="60" rx="30" fill="url(#penBarrel)" stroke="#08234d" strokeWidth="2.4" />
+                        <rect x="128" y="37" width="196" height="10" rx="5" fill="#d9ecff" opacity="0.6" />
+                        <rect x="128" y="72" width="196" height="6" rx="3" fill="#04193f" opacity="0.35" />
 
-                        <path d="M91 7.5H101.5C104.5 7.5 107 10.4 107 15C107 19.6 104.5 22.5 101.5 22.5H91Z" fill="url(#penGold)" stroke="#5c3d0d" strokeWidth="0.7" />
-                        <rect x="97" y="3" width="2.6" height="10" rx="1.3" fill="url(#penGold)" stroke="#5c3d0d" strokeWidth="0.5" />
+                        <rect x="330" y="26" width="26" height="66" rx="5" fill="url(#penGold)" stroke="#5c3d0d" strokeWidth="2" />
                       </svg>
                     </span>
                   </p>
                 </div>
               </div>
-              <div className="page page--right">
-                <div className="page-seal">
-                  <span>V</span>
-                </div>
-                <div className="page-flourish" />
-              </div>
+              <div className="page page--right" />
             </div>
 
           </div>
