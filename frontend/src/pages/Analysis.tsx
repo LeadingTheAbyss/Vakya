@@ -182,10 +182,16 @@ const Analysis = () => {
   const [cachedRiskScore, setCachedRiskScore] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [minAnimationDone, setMinAnimationDone] = useState(false);
 
 
+  useEffect(() => {
+    const minDuration = 10000 + Math.random() * 2000;
+    const t = setTimeout(() => setMinAnimationDone(true), minDuration);
+    return () => clearTimeout(t);
+  }, []);
 
-  
+
   useEffect(() => {
     if (isLoaded) return;
 
@@ -448,7 +454,7 @@ const Analysis = () => {
         <BookLoader
           fileName={file ? file.name : 'Vendor_Agreement_TechCorp.pdf'}
           agents={agents}
-          complete={isLoaded}
+          complete={isLoaded && minAnimationDone}
           onFinished={() => setWorkspaceRevealed(true)}
         />
       </div>

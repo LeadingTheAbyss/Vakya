@@ -14,13 +14,13 @@
   width: 440px;
   max-width: 88vw;
   height: 300px;
-  transition: transform 0.95s cubic-bezier(0.6, -0.15, 0.7, 0.1), opacity 0.85s ease-in 0.15s;
+  transition: transform 4.6s cubic-bezier(0.45, 0, 0.55, 1), opacity 1.3s ease-in 3.3s;
   will-change: transform;
   filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.45));
 }
 
 .book-scene--flying .book-wrapper {
-  transform: translateY(-820px) translateX(60px) rotate(-24deg) scale(0.4);
+  transform: translateY(-1500px) translateX(140px) rotate(-18deg) scale(0.3);
   opacity: 0;
 }
 
@@ -116,34 +116,32 @@
 .page {
   position: relative;
   flex: 1;
-  padding: 22px 24px 22px 46px;
+  padding: 22px 26px;
   display: flex;
   flex-direction: column;
-  background-color: #ddc99a;
+  background-color: #dcc491;
   background-image:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 27px,
-      rgba(90, 65, 30, 0.22) 28px
-    ),
-    linear-gradient(90deg, transparent 0px, transparent 21px, rgba(150, 40, 30, 0.4) 22px, rgba(150, 40, 30, 0.4) 23px, transparent 24px),
-    radial-gradient(circle at 8% 92%, rgba(110, 75, 30, 0.28), transparent 30%),
-    radial-gradient(circle at 92% 8%, rgba(110, 75, 30, 0.22), transparent 28%),
-    radial-gradient(circle at 85% 85%, rgba(90, 55, 20, 0.18), transparent 35%),
-    radial-gradient(circle at 15% 15%, rgba(255, 250, 230, 0.4), transparent 45%),
-    linear-gradient(120deg, rgba(120, 90, 40, 0.1), transparent 55%);
-  box-shadow: inset 0 0 40px rgba(80, 55, 20, 0.35);
+    /* coarse fibrous grain, tiled */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.85' numOctaves='3' seed='7' stitchTiles='stitch' result='n'/%3E%3CfeColorMatrix in='n' type='matrix' values='0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23f)'/%3E%3C/svg%3E"),
+    /* scattered dark specks */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.85' numOctaves='2' seed='3' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.1 0 0 0 0 0.07 0 0 0 0 0.03 0 0 0 1 0' result='d'/%3E%3CfeComponentTransfer in='d'%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23s)'/%3E%3C/svg%3E"),
+    /* even vignette: light beige/tan center fading through gold to a burnt-brown edge */
+    radial-gradient(ellipse 82% 80% at 50% 50%, #f3e6c4 0%, #ecd9a8 32%, #d8b675 52%, #a9722f 72%, #6b3f18 88%, #3a1f0c 100%);
+  background-size: 240px 240px, 160px 160px, 100% 100%;
+  box-shadow: inset 0 0 46px rgba(58, 31, 12, 0.75);
 }
 
 .page--left { border-right: none; }
 .page--right {
-  padding-left: 24px;
+  padding-left: 26px;
 }
 
 .page-heading {
-  font-family: 'UnifrakturCook', serif;
-  font-size: 17px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  font-size: 18px;
+  font-weight: 700;
   color: #4a3210;
   margin-bottom: 14px;
   border-bottom: 1px solid rgba(74, 50, 16, 0.25);
@@ -163,72 +161,69 @@
   font-size: 16px;
   font-style: italic;
   color: #3a2a10;
-  line-height: 1.6;
+  line-height: 1.7;
   min-height: 24px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
   overflow: visible;
 }
 
+/* Anchor collapses to ~0 size so it can't inflate the text line's height —
+   it just marks where in the flow (i.e. how far along the typed text) the
+   pen should sit. The actual pen graphic is an absolutely-positioned child
+   floating out from that anchor, free to be much bigger than the text. */
 .pen-nib {
+  position: relative;
+  display: inline-block;
+  width: 1px;
+  height: 1px;
+  vertical-align: baseline;
+}
+.pen-nib-img {
   position: absolute;
-  left: 96%;
-  top: 50%;
-  display: inline-flex;
-  width: 260px;
-  transform-origin: 8% 55%;
-  transform: translateY(-52%) rotate(-32deg) scale(1.12);
-  filter: drop-shadow(10px 16px 14px rgba(0, 0, 0, 0.5));
-  animation: penBob 0.6s ease-in-out infinite;
-  flex-shrink: 0;
+  left: 0;
+  bottom: 2px;
+  width: 130px;
+  height: auto;
+  transform-origin: 4% 92%;
+  transform: translate(4px, 0) rotate(-4deg) scale(1.1);
+  filter: drop-shadow(8px 12px 12px rgba(0, 0, 0, 0.5));
+  animation: penWrite 0.5s ease-in-out infinite;
   pointer-events: none;
   z-index: 5;
 }
-.pen-nib svg { display: block; width: 100%; height: auto; overflow: visible; }
 
-.pen-feather {
-  animation: featherFlutter 2.6s ease-in-out infinite;
-  transform-origin: 330px 100px;
-}
-
-@keyframes penBob {
-  0%, 100% { transform: translateY(-52%) rotate(-32deg) scale(1.12); }
-  50%      { transform: translateY(calc(-52% - 3px)) rotate(-28deg) scale(1.12); }
-}
-@keyframes featherFlutter {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(-2.5deg); }
+/* small scribbling jitter — the pen itself advances by simply following the
+   growing {typed} text in normal flow, this just sells "actively writing" */
+@keyframes penWrite {
+  0%, 100% { transform: translate(4px, 0) rotate(-4deg) scale(1.1); }
+  30%      { transform: translate(4px, -1.5px) rotate(-6.5deg) scale(1.1); }
+  60%      { transform: translate(4px, 1.5px) rotate(-2deg) scale(1.1); }
 }
 
 
 .book-wing {
   position: absolute;
-  top: 44%;
-  width: 130px;
-  height: 90px;
+  top: 38%;
+  width: 260px;
+  height: auto;
   opacity: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 30% 30%, #ffffff, #f1f1f6 55%, #d8d8e2 100%);
-  clip-path: polygon(0% 50%, 20% 20%, 45% 0%, 70% 10%, 100% 35%, 85% 55%, 95% 75%, 65% 70%, 40% 90%, 20% 75%, 30% 55%);
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
   transition: opacity 0.3s ease;
 }
 .book-wing--left {
-  left: -70px;
-  transform-origin: right center;
+  left: -180px;
+  transform-origin: 88% 50%;
   transform: scaleX(-1);
 }
 .book-wing--right {
-  right: -70px;
-  transform-origin: left center;
+  right: -180px;
+  transform-origin: 12% 50%;
 }
 
 .book-scene--closing .book-wing,
 .book-scene--flying .book-wing {
   opacity: 1;
-  animation-duration: 0.32s;
+  animation-duration: 0.55s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
@@ -239,14 +234,14 @@
 .book-scene--closing .book-wing--right,
 .book-scene--flying .book-wing--right {
   animation-name: wingFlapRight;
-  animation-delay: 0.06s;
+  animation-delay: 0.1s;
 }
 
 @keyframes wingFlapLeft {
   0%, 100% { transform: scaleX(-1) rotate(0deg); }
-  50%      { transform: scaleX(-1) rotate(-22deg); }
+  50%      { transform: scaleX(-1) rotate(-30deg); }
 }
 @keyframes wingFlapRight {
   0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(22deg); }
+  50%      { transform: rotate(30deg); }
 }
