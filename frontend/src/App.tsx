@@ -10,6 +10,7 @@ import Upload from './pages/Upload';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import LoaderPreview from './pages/LoaderPreview';
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_API_KEY';
@@ -27,6 +28,7 @@ function App() {
             <Route path="report/:id" element={<Report />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="loader-preview" element={<LoaderPreview />} />
           </Route>
         </Routes>
       </Router>
