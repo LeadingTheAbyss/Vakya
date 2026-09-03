@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import './BookLoader.css';
 import vakyaLogo from '../images/logo_nobg.png';
-import quillPen from '../images/quill-pen.png';
-import doveWingLeft from '../images/dove-wing-left.png';
+import quillPen from '../pen.png';
+import doveWingLeft from '../right_wing.png';
 import doveWingRight from '../images/dove-wing-right.png';
 
 interface AgentLike {
