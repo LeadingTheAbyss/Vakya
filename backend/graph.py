@@ -48,6 +48,7 @@ def process_single_clause(args):
         "compliance_info": comp_info,
         "negotiation_info": neg_info
     }
+    #1
     return analysis
 
 def clause_batch_node(state: ContractState):
